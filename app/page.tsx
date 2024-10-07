@@ -1,5 +1,6 @@
 import { addTask } from "@/actions/actions";
 import prisma from "@/lib/db";
+import { Key } from "react";
 
 export default async function Home() {
 
@@ -12,7 +13,7 @@ export default async function Home() {
         All tasks:
       </h1>
       <ul>
-        {tasks.map((task) => (
+        {tasks.map((task: { id: Key | null | undefined; title: string | number | bigint | boolean | null | undefined; }) => (
           <li key={task.id}>{task.title}</li>
         ))}
       </ul>
