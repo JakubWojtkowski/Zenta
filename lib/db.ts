@@ -8,7 +8,7 @@ declare global {
     const prismaGlobal: undefined | ReturnType<typeof prismaClientSingleton>;
 }
 
-const prisma = new PrismaClient({ datasources: {db: {url: "postgresql://postgres:password@localhost:5432/dev-db"}} });
+const prisma = globalThis.prismaGlobal ?? prismaClientSingleton();
 
 export default prisma;
 
