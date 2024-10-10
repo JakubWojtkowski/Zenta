@@ -1,29 +1,10 @@
-import { addProject } from "@/actions/actions";
+import { createProject } from "@/actions/actions";
 import prisma from "@/lib/db";
 import Link from "next/link";
 
 export default async function ProjectsPage() {
-  const projects = await prisma.project.findMany(
-    // {
-  //   where: {
-  //     title: {
-  //       endsWith: "task",
-  //     },
-  //   },
-  //   orderBy: {
-  //     createdAt: "desc",
-  //   },
-  //   select: {
-  //     id: true,
-  //     title: true,
-  //     slug: true,
-  //   },
-  //   // take: 10,
-  //   // skip: 10,
-  // }
-  );
+  const projects = await prisma.project.findMany();
 
-  // const projectsCount = await prisma.project.count();
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
@@ -43,14 +24,27 @@ export default async function ProjectsPage() {
         ))}
       </ul>
 
-      {/* <form action={addProject} className="space-x-2 h-4">
-        <input type="text" name="title" className="px-3 py-1 rounded" />
+      <form
+        action={createProject}
+        className="flex flex-col gap-y-2 w-[300px] my-4"
+      >
+        <input
+          type="text"
+          name="title"
+          placeholder="Title"
+          className="px-2 py-1 rounded-sm"
+        />
+        {/* <textarea
+          name="content"
+          rows={5}
+          placeholder="Content"
+          className="px-2 py-1 rounded-sm"
+        /> */}
         <button
-          type="submit" className="bg-blue-500 px-3 py-1 text-white rounded"
-        >
-          Add project
-        </button>
-      </form> */}
+          type="submit"
+          className="bg-blue-500 py-2 text-white rounded-sm"
+        >Create Project</button>
+      </form>
     </div>
   );
 }
