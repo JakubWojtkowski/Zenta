@@ -12,6 +12,7 @@ export default async function ProjectPage({ params }) {
             <h1 className="text-3xl font-semibold">
                 {project?.title}
             </h1>
+            <p>{project?.content}</p>
         </div>
     );
 }

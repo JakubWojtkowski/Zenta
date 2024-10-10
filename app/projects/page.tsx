@@ -3,17 +3,25 @@ import prisma from "@/lib/db";
 import Link from "next/link";
 
 export default async function ProjectsPage() {
-  const projects = await prisma.project.findMany();
+  // const projects = await prisma.project.findMany();
+  const user = await prisma.user.findUnique({
+    where: {
+      email: "john@gmail.com",
+    },
+    include: {
+      projects: true,
+    }
+  });
 
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
 
       <h1 className="text-3xl font-bold">
-        All projects ({projects.length}):
+        All projects ({user?.projects.length}):
       </h1>
       <ul>
-        {projects.map((project) => (
+        {user?.projects.map((project) => (
           <li key={project.id}>
             <Link
               href={`projects/${project.slug}`}
@@ -34,12 +42,12 @@ export default async function ProjectsPage() {
           placeholder="Title"
           className="px-2 py-1 rounded-sm"
         />
-        {/* <textarea
+        <textarea
           name="content"
           rows={5}
           placeholder="Content"
           className="px-2 py-1 rounded-sm"
-        /> */}
+        />
         <button
           type="submit"
           className="bg-blue-500 py-2 text-white rounded-sm"

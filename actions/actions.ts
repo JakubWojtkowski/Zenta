@@ -7,14 +7,19 @@ export async function createProject(formData: FormData) {
     await prisma.project.create({
         data: {
             title: formData.get("title") as string,
-            slug: (formData.get("sltitleug") as string)
+            slug: (formData.get("title") as string)
                 .replace(/\s+/g, "-")
                 .toLowerCase(),
-            // content: formData.get("content") as string,
-        }
+            content: formData.get("content") as string,
+            author: {
+                connect: {
+                    email: "john@gmail.com"
+                },
+            },
+        },
     });
 
-    revalidatePath("/");
+    revalidatePath("/projects");
 }
 
 export async function updateProject(formData: FormData, id: string) {
@@ -29,9 +34,10 @@ export async function updateProject(formData: FormData, id: string) {
         }
     });
 
-    revalidatePath("/");
+    revalidatePath("/projects");
 }
 
 export async function deleteProject(id: string) {
     await prisma.project.delete({ where: { id } });
+    revalidatePath("/projects");
 }
