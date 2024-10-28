@@ -1,14 +1,25 @@
-import Link from "next/link";
+import { authOptions } from "@/lib/auth";
+import { getServerSession } from "next-auth";
+import ProjectsPage from "@/app/projects/page";
+import Sidebar from "./components/Sidebar";
 
-export default async function Home() {
+const page = async () => {
+  const session = await getServerSession(authOptions);
 
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-
-      <h1 className="text-3xl font-bold underline">
-        All tasks:
-      </h1>
-      <Link href={`/projects`}>klik</Link>
+    <div className="m-16">
+      {
+        session?.user ? (
+          <div className="flex flex-row w-full">
+            <Sidebar />
+            <ProjectsPage />
+          </div>
+        ) : (<div>
+          <h2 className="text-2xl">Please login to see this page</h2>
+        </div >)
+      }
     </div>
   );
-}
+};
+
+export default page;

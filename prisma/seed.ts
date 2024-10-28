@@ -12,9 +12,10 @@ const initialProjects: Prisma.ProjectCreateInput[] = [
                     email: "john@gmail.com"
                 },
                 create: {
-                    name: "John",
+                    username: "John",
                     email: "john@gmail.com",
-                    hashedPassword: "asdafdafgkfo2pl2kkl",
+                    password: "password",
+                    role: "git"
                 },
             },
         },

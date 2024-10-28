@@ -8,24 +8,92 @@ datasource db {
 }
 
 model User {
-  id             String    @id @default(cuid())
-  email          String    @unique
-  name           String
-  hashedPassword String
-  projects       Project[]
+  id             String   @id @default(cuid()) // main key
+  username       String   @unique
+  email          String   @unique
+  password       String // Zaszyfrowane hasło
+  role           String // Rola użytkownika (admin, user, manager, etc.)
+  createdAt      DateTime @default(now()) // Data utworzenia konta
+
+  projects Project[] // one user can create many projects
+  tasks    Task[] // one user many tasks
+  TimeLog  TimeLog[]
+  UserRole UserRole[]
 }
 
 model Project {
-  id        String   @id @default(cuid())
+  id        String  @id @default(cuid())
   title     String
-  content   String
-  slug      String   @unique
-  completed Boolean  @default(false)
-  // authors   User[] // many to many 
+  content   String?
+  slug      String  @unique
+  completed Boolean @default(false)
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  String
+
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
+
+  tasks Task[] // one project many tasks
 
   @@index(slug)
+}
+
+model Task {
+  id          String    @id @default(cuid()) // Klucz główny
+  taskName    String 
+  description String? 
+  status      Status 
+  priority    Priority 
+  deadline    DateTime? 
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Klucze obce
+  projectId  String // Klucz obcy do Project (project_id)
+  assignedTo String? // Klucz obcy do User (user_id), użytkownik przypisany do zadania
+
+  // Relacje
+  project  Project   @relation(fields: [projectId], references: [id]) // Relacja do projektu
+  assignee User?     @relation(fields: [assignedTo], references: [id]) // Relacja do użytkownika (opcjonalna)
+  TimeLog  TimeLog[]
+}
+
+model TimeLog {
+  id        Int      @id @default(autoincrement())
+  duration  Int
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Role {
+  id    Int        @id @default(autoincrement())
+  name  String     @unique
+  users UserRole[]
+}
+
+model UserRole {
+  userId String
+  roleId Int
+  user   User   @relation(fields: [userId], references: [id])
+  role   Role   @relation(fields: [roleId], references: [id])
+
+  @@id([userId, roleId]) // Composite key for many-to-many relationship
+}
+
+enum Status {
+  TODO // Zadanie do wykonania
+  IN_PROGRESS // Zadanie w trakcie realizacji
+  DONE // Zadanie zakończone
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
 }
