@@ -8,87 +8,95 @@ datasource db {
 }
 
 model User {
-  id             String   @id @default(cuid()) // main key
+  id             String   @id @default(cuid()) // Główny klucz
   username       String   @unique
   email          String   @unique
-  password       String // Zaszyfrowane hasło
-  role           String // Rola użytkownika (admin, user, manager, etc.)
+  password       String   // Zaszyfrowane hasło
+  role           String   // Rola użytkownika (admin, user, manager, etc.)
   createdAt      DateTime @default(now()) // Data utworzenia konta
 
-  projects Project[] // one user can create many projects
-  tasks    Task[] // one user many tasks
-  TimeLog  TimeLog[]
-  UserRole UserRole[]
+  projects       Project[]         // Jeden użytkownik może stworzyć wiele projektów
+  tasks          Task[]            // Jeden użytkownik może mieć wiele zadań
+  TimeLog        TimeLog[]         // Logi czasu pracy
+  UserRole       UserRole[]        // Rola użytkownika w systemie
+  ProjectMember  ProjectMember[]   // Relacja wiele do wielu z projektami (członkostwo w projektach)
 }
 
 model Project {
-  id        String  @id @default(cuid())
-  title     String
-  content   String?
-  slug      String  @unique
-  completed Boolean @default(false)
+  id             String         @id @default(cuid()) // Główny klucz
+  title          String         // Tytuł projektu
+  content        String?        // Opis projektu
+  slug           String         @unique // Unikalny identyfikator URL
+  completed      Boolean        @default(false) // Czy projekt został ukończony
+  createdAt      DateTime       @default(now()) @map("created_at") // Data utworzenia projektu
+  updatedAt      DateTime       @updatedAt // Automatyczna aktualizacja daty modyfikacji
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt
+  author         User           @relation(fields: [authorId], references: [id]) // Autor projektu
+  authorId       String         // Klucz obcy do użytkownika (id autora)
 
-  author   User   @relation(fields: [authorId], references: [id])
-  authorId String
+  tasks          Task[]         // Jeden projekt może mieć wiele zadań
+  members        ProjectMember[] // Relacja wiele do wielu z użytkownikami (członkostwo)
 
-  tasks Task[] // one project many tasks
+  @@index([slug]) // Indeks dla pola slug
+}
 
-  @@index(slug)
+model ProjectMember {
+  userId    String
+  projectId String
+  user      User    @relation(fields: [userId], references: [id]) // Relacja do użytkownika
+  project   Project @relation(fields: [projectId], references: [id]) // Relacja do projektu
+
+  @@id([userId, projectId]) // Klucz złożony (wiele do wielu)
 }
 
 model Task {
-  id          String    @id @default(cuid()) // Klucz główny
-  taskName    String 
-  description String? 
-  status      Status 
-  priority    Priority 
-  deadline    DateTime? 
+  id          String    @id @default(cuid()) // Główny klucz
+  taskName    String    // Nazwa zadania
+  description String?   // Opcjonalny opis zadania
+  status      Status    // Status zadania (TODO, IN_PROGRESS, DONE)
+  priority    Priority  // Priorytet zadania (LOW, MEDIUM, HIGH, URGENT)
+  deadline    DateTime? // Opcjonalna data zakończenia
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime @default(now()) // Data utworzenia zadania
+  updatedAt   DateTime @updatedAt // Data ostatniej modyfikacji
 
-  // Klucze obce
-  projectId  String // Klucz obcy do Project (project_id)
-  assignedTo String? // Klucz obcy do User (user_id), użytkownik przypisany do zadania
+  projectId   String // Klucz obcy do Project (id projektu)
+  assignedTo  String? // Klucz obcy do User (id użytkownika), przypisany użytkownik
 
-  // Relacje
-  project  Project   @relation(fields: [projectId], references: [id]) // Relacja do projektu
-  assignee User?     @relation(fields: [assignedTo], references: [id]) // Relacja do użytkownika (opcjonalna)
-  TimeLog  TimeLog[]
+  project     Project   @relation(fields: [projectId], references: [id]) // Relacja do projektu
+  assignee    User?     @relation(fields: [assignedTo], references: [id]) // Przypisany użytkownik (opcjonalny)
+  TimeLog     TimeLog[] // Logi czasu związane z zadaniem
 }
 
 model TimeLog {
-  id        Int      @id @default(autoincrement())
-  duration  Int
-  taskId    String
-  task      Task     @relation(fields: [taskId], references: [id])
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
+  id        Int      @id @default(autoincrement()) // Główny klucz
+  duration  Int      // Czas pracy (w minutach)
+  taskId    String   // Klucz obcy do zadania
+  task      Task     @relation(fields: [taskId], references: [id]) // Relacja do zadania
+  userId    String   // Klucz obcy do użytkownika
+  user      User     @relation(fields: [userId], references: [id]) // Relacja do użytkownika
+  createdAt DateTime @default(now()) // Data logu czasu
 }
 
 model Role {
-  id    Int        @id @default(autoincrement())
-  name  String     @unique
-  users UserRole[]
+  id    Int        @id @default(autoincrement()) // Główny klucz
+  name  String     @unique // Nazwa roli (np. admin, user)
+  users UserRole[] // Relacja wiele do wielu z użytkownikami
 }
 
 model UserRole {
-  userId String
-  roleId Int
-  user   User   @relation(fields: [userId], references: [id])
-  role   Role   @relation(fields: [roleId], references: [id])
+  userId String // Klucz obcy do użytkownika
+  roleId Int    // Klucz obcy do roli
+  user   User   @relation(fields: [userId], references: [id]) // Relacja do użytkownika
+  role   Role   @relation(fields: [roleId], references: [id]) // Relacja do roli
 
-  @@id([userId, roleId]) // Composite key for many-to-many relationship
+  @@id([userId, roleId]) // Klucz złożony dla relacji wiele do wielu
 }
 
 enum Status {
-  TODO // Zadanie do wykonania
-  IN_PROGRESS // Zadanie w trakcie realizacji
-  DONE // Zadanie zakończone
+  TODO         // Zadanie do wykonania
+  IN_PROGRESS  // Zadanie w trakcie realizacji
+  DONE         // Zadanie zakończone
 }
 
 enum Priority {
