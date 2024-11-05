@@ -19,36 +19,41 @@ export async function POST(req: Request) {
         const body = await req.json();
         const { email, username, password } = userSchema.parse(body);
 
-        // check if email already exists
+        // Check if email already exists
         const existingUserByEmail = await db.user.findUnique({
             where: { email: email }
         });
         if (existingUserByEmail) {
-            return NextResponse.json({ user: null, message: "User with this email already exists" }, { status: 409 })
+            return NextResponse.json({ user: null, message: "User with this email already exists" }, { status: 409 });
         }
 
-        // check if username already exists
+        // Check if username already exists
         const existingUserByUsername = await db.user.findUnique({
             where: { username: username }
         });
         if (existingUserByUsername) {
-            return NextResponse.json({ user: null, message: "User with this username already exists" }, { status: 409 })
+            return NextResponse.json({ user: null, message: "User with this username already exists" }, { status: 409 });
         }
 
+        // Hash the password
         const hashedPassword = await hash(password, 10);
+
+        // Create a new user with the default role 'user'
         const newUser = await db.user.create({
             data: {
                 username,
                 email,
                 password: hashedPassword,
-                role: "",
+                role: "user"
             }
         });
 
+        // Remove password from the response
         const { password: newUserPassword, ...rest } = newUser;
 
         return NextResponse.json({ user: rest, message: "User created successfully" }, { status: 201 });
     } catch (err) {
+        console.error(err);
         return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
     }
 }
