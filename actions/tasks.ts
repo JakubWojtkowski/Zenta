@@ -6,52 +6,15 @@ import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
-// Funkcja do tworzenia projektu
-export async function createProject(formData: FormData) {
-    // Pobierz sesję użytkownika
-    const session = await getServerSession(authOptions);
 
-    if (!session || !session.user?.email) {
-        throw new Error("You must be logged in to create a project.");
-    }
-
-    try {
-        // Tworzenie projektu
-        await prisma.project.create({
-            data: {
-                title: formData.get("title") as string,
-                slug: (formData.get("title") as string)
-                    .replace(/\s+/g, "-")
-                    .toLowerCase(),
-                content: formData.get("content") as string,
-                author: {
-                    connect: {
-                        email: session.user.email, // Używamy emaila bieżącego użytkownika
-                    },
-                },
-                // Dodanie autora jako członka projektu
-                members: {
-                    create: {
-                        user: {
-                            connect: {
-                                email: session.user.email,
-                            },
-                        },
-                    },
-                },
-            },
-        });
-
-        // Odswież ścieżkę /projects po utworzeniu projektu
-        revalidatePath("/projects");
-    } catch (err) {
-        if (err instanceof Prisma.PrismaClientKnownRequestError) {
-            if (err.code === "P2002") {
-                console.log("Unique constraint violation");
-            }
-        }
-    }
+// Definicja typu aktualizacji taska
+interface UpdateTaskInput {
+    taskId: string;
+    taskName?: string;
+    priority?: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
+    status?: "TODO" | "IN_PROGRESS" | "DONE";
 }
+
 // Funkcja do tworzenia zadania
 export async function createTask(formData: FormData) {
     const session = await getServerSession(authOptions);
@@ -99,36 +62,42 @@ export async function createTask(formData: FormData) {
     }
 }
 
+export const deleteTask = async (taskId: string) => {
+    await prisma.task.delete({
+        where: { id: taskId },
+    });
+};
 
-export async function addMemberToProject(formData: FormData) {
-    // Pobierz sesję użytkownika
-    const session = await getServerSession(authOptions);
+export async function updateTask(formData: FormData) {
+    // Pobierz wartości z formData i przypisz typy
+    const taskId = formData.get("taskId") as string;
+    const taskName = formData.get("taskName") as string | undefined;
+    const priority = formData.get("priority") as "LOW" | "MEDIUM" | "HIGH" | "URGENT" | undefined;
+    const status = formData.get("status") as "TODO" | "IN_PROGRESS" | "DONE" | undefined;
 
-    if (!session || !session.user?.email) {
-        throw new Error("You must be logged in to add members to a project.");
-    }
-
-    const projectId = formData.get("projectId") as string;
-    const userId = formData.get("userId") as string;
+    // Budowanie obiektu aktualizacji
+    const updateData: UpdateTaskInput = {
+        taskId,
+        taskName,
+        priority,
+        status,
+    };
 
     try {
-        await prisma.projectMember.create({
+        // Wykonanie aktualizacji w Prisma
+        await prisma.task.update({
+            where: { id: taskId },
             data: {
-                project: {
-                    connect: { id: projectId },
-                },
-                user: {
-                    connect: { id: userId },
-                },
+                taskName: updateData.taskName,
+                priority: updateData.priority,
+                status: updateData.status,
             },
         });
-    } catch (err) {
+    } catch (err: unknown) {
         if (err instanceof Prisma.PrismaClientKnownRequestError) {
-            if (err.code === "P2002") {
-                console.log("Member is already in the project");
-            }
+            console.log("Prisma error:", err.message);
         } else {
-            console.error(err);
+            console.error("Unknown error during task update:", err);
         }
     }
 }

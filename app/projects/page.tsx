@@ -3,7 +3,8 @@ import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/db"; 
 import Link from "next/link"; 
 import Image from "next/image"; 
-import { createProject, addMemberToProject } from "@/actions/actions"; 
+import { createProject } from "@/actions/projects"; 
+import { addMemberToProject } from "@/actions/users"; 
 
 export default async function ProjectsPage() { 
     const session = await getServerSession(authOptions);
