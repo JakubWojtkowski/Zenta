@@ -56,16 +56,20 @@ export default async function ProjectPage({ params }) {
                     placeholder="Task Name"
                     className="border p-2 rounded"
                     required
+                    minLength={3}
+                    maxLength={50}
                 />
                 <textarea
                     name="description"
                     placeholder="Task Description"
                     rows={4}
                     className="border p-2 rounded"
+                    minLength={10}
+                    maxLength={500}
                 />
 
                 {/* Priorytet zadania */}
-                <select name="priority" className="border p-2 rounded">
+                <select name="priority" className="border p-2 rounded" required>
                     <option value="LOW">Low</option>
                     <option value="MEDIUM">Medium</option>
                     <option value="HIGH">High</option>
@@ -73,7 +77,7 @@ export default async function ProjectPage({ params }) {
                 </select>
 
                 {/* Lista członków do przypisania zadania */}
-                <select name="assignedTo" className="border p-2 rounded">
+                <select name="assignedTo" className="border p-2 rounded" required>
                     {project?.members.map((member) => (
                         <option key={member.user.id} value={member.user.id}>
                             {member.user.username}
@@ -87,6 +91,8 @@ export default async function ProjectPage({ params }) {
                     name="timeEstimate"
                     placeholder="Estimated Time (minutes)"
                     className="border p-2 rounded"
+                    required
+                    min={1}
                 />
 
                 {/* Szacowane punkty trudności */}
@@ -95,6 +101,9 @@ export default async function ProjectPage({ params }) {
                     name="estimatedPoints"
                     placeholder="Estimated Points"
                     className="border p-2 rounded"
+                    required
+                    min="1"
+                    max="100"
                 />
 
                 <button type="submit" className="bg-blue-500 text-white py-2 rounded">
