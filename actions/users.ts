@@ -37,3 +37,15 @@ export async function addMemberToProject(formData: FormData) {
         }
     }
 }
+
+export async function generateAvatar(username: string) {
+    if (username.length < 2) {
+        throw new Error("Username must be at least 2 characters long.");
+    }
+
+    const firstLetter = username.charAt(0).toUpperCase();
+    const lastLetter = username.charAt(username.length - 1).toUpperCase();
+
+    // Łączymy litery i zwracamy jako avatar
+    return firstLetter + lastLetter;
+}

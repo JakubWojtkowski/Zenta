@@ -101,3 +101,44 @@ export async function updateTask(formData: FormData) {
         }
     }
 }
+
+// Interfejs dla danych wejściowych do akcji
+interface AddTimeLogParams {
+    taskId: string;
+    duration: number;
+    userId: string;
+}
+
+// Akcja do dodawania logu czasu
+export async function addTimeLog({ taskId, duration }: AddTimeLogParams) {
+    console.log("okk");
+    // Pobieranie sesji użytkownika
+    const session = await getServerSession(authOptions);
+
+    // Sprawdzanie, czy użytkownik jest zalogowany
+    if (!session || !session.user) {
+        throw new Error("Musisz być zalogowany, aby dodać log czasu.");
+    }
+
+    // Pobieranie ID użytkownika z sesji
+    const userId = session.user.id;
+
+    // Dodanie logu czasu do bazy danych
+    
+    try {
+        const timeLog = await prisma.timeLog.create({
+            data: {
+                duration,
+                task: { connect: { id: taskId } },
+                user: { connect: { id: userId } },
+            },
+        });
+        console.log(taskId, userId, timeLog);
+
+        // Zwrot nowo utworzonego logu czasu
+        return timeLog;
+    } catch (error) {
+        console.error("Błąd przy dodawaniu logu czasu:", error);
+        throw new Error("Nie udało się dodać logu czasu.");
+    }
+}

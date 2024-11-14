@@ -6,7 +6,6 @@ import { authOptions } from '@/lib/auth';
 import UserAccountnav from './UserAccountnav';
 
 const Navbar = async () => {
-    // Await the session fetch before rendering
     const session = await getServerSession(authOptions);
 
     return (
@@ -18,7 +17,6 @@ const Navbar = async () => {
                     Home
                 </Link>
 
-                {/* User Account Navigation or Sign In Button */}
                 {session?.user ? (
                     <UserAccountnav />
                 ) : (

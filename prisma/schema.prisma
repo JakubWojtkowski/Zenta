@@ -14,6 +14,7 @@ model User {
   password  String // Zaszyfrowane hasło
   role      String // Rola użytkownika (admin, user, manager, etc.)
   createdAt DateTime @default(now()) // Data utworzenia konta
+  // dodac avatar
 
   projects      Project[] // Jeden użytkownik może stworzyć wiele projektów
   tasks         Task[] // Jeden użytkownik może mieć wiele zadań
@@ -30,6 +31,7 @@ model Project {
   completed Boolean  @default(false) // Czy projekt został ukończony
   createdAt DateTime @default(now()) @map("created_at") // Data utworzenia projektu
   updatedAt DateTime @updatedAt // Automatyczna aktualizacja daty modyfikacji
+  // dodac end date
 
   author   User   @relation(fields: [authorId], references: [id]) // Autor projektu
   authorId String // Klucz obcy do użytkownika (id autora)

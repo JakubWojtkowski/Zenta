@@ -37,7 +37,7 @@ const Sidebar = async () => {
             {session?.user ? (
                 <div className="flex-1 flex flex-col justify-between">
                     <div>
-                        <p className="text-sm mb-4">Logged in as {session.user.name}</p>
+                        <p className="text-sm mb-4">Logged in as <b>{session.user.username}</b></p>
                         <Link href="/profile" className="flex items-center gap-2 p-2 hover:bg-gray-700 rounded-md">
                             <Settings className="w-5 h-5" />
                             <span>Profile</span>
