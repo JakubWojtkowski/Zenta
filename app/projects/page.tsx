@@ -42,50 +42,53 @@ export default async function ProjectsPage() {
         <div className="flex-[0.8] grid items-center justify-items-center gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
             <h1 className="text-3xl font-bold">List of your projects ({user.projects.length}):</h1>
 
-            <table className="table-auto border-collapse border border-gray-400 w-full sm:w-3/4 mb-8">
+            <table className="table-auto border-collapse border border-gray-400 w-full sm:w-full mb-8">
                 <thead className="bg-gray-200 text-gray-700">
                     <tr>
-                        <th className="border border-gray-300 px-4 py-2">ID</th>
-                        <th className="border border-gray-300 px-4 py-2">Title</th>
-                        <th className="border border-gray-300 px-4 py-2">Created at</th>
-                        <th className="border border-gray-300 px-4 py-2">Completed</th>
-                        <th className="border border-gray-300 px-4 py-2">Author</th>
-                        <th className="border border-gray-300 px-4 py-2">Members</th>
-                        <th className="border border-gray-300 px-4 py-2">Actions</th>
+                        <th className="border border-gray-300 px-6 py-4">ID</th>
+                        <th className="border border-gray-300 px-6 py-4">Project Name</th>
+                        <th className="border border-gray-300 px-6 py-4">Completed</th>
+                        <th className="border border-gray-300 px-6 py-4">Author</th>
+                        <th className="border border-gray-300 px-6 py-4">Members</th>
+                        <th className="border border-gray-300 px-6 py-4">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {user.projects.map((project) => (
                         <tr key={project.id} className="hover:bg-gray-100">
-                            <td className="border border-gray-300 px-4 py-2">{project.id}</td>
-                            <td className="border border-gray-300 px-4 py-2">
+                            <td className="border border-gray-300 px-6 py-4">{project.id.toString().slice(0, 6)}</td>
+                            <td className="border border-gray-300 px-6 py-4">
                                 <Link href={`projects/${project.slug}`} className="text-blue-500 hover:underline">
                                     {project.title}
                                 </Link>
                             </td>
-                            <td className="border border-gray-300 px-4 py-2">
-                                {new Date(project.createdAt).toLocaleDateString()}
-                            </td>
-                            <td className="border border-gray-300 px-4 py-2">
+                            <td className="border border-gray-300 px-6 py-4">
                                 {project.completed ? "Yes" : "No"}
                             </td>
-                            <td className="border border-gray-300 px-4 py-2">
+                            <td className="border border-gray-300 px-6 py-4">
                                 {project.author ? project.author.username : "Unknown"}
                             </td>
-                            <td className="border border-gray-300 px-4 py-2 flex items-center">
-                                {project.members.map((member) => (
-                                    <div key={member.user.id} className="ml-2 w-8 h-8 bg-gray-200 text-gray-700 rounded-full flex items-center justify-center">{generateAvatar(member.user.username)}</div>
+                            <td className="border border-gray-300 px-6 py-4 flex items-center">
+                                {project.members.slice(0, 3).map((member) => (
+                                    <div key={member.user.id} className="ml-2 w-8 h-8 bg-gray-200 text-gray-700 rounded-full flex items-center justify-center">
+                                        {generateAvatar(member.user.username)}
+                                    </div>
                                 ))}
-                                {/* Przycisk do dodania członka */}
-                                <button className="ml-2 w-8 h-8 bg-gray-200 text-gray-700 rounded-full flex items-center justify-center">
-                                    +
-                                </button>
+                                {project.members.length > 3 && (
+                                    <button className="ml-2 w-8 h-8 bg-gray-200 text-gray-700 rounded-full flex items-center justify-center">
+                                        +
+                                    </button>
+                                )}
                             </td>
-                            <td className="border border-gray-300 px-4 py-2">
-                                <Link href={`/projects/edit/${project.id}`} className="text-blue-500 hover:underline mr-2">
+                            {/* Kolumna Actions z przyciskami Edit i Delete */}
+                            <td className="border border-gray-300 px-6 py-4 flex items-center space-x-4">
+                                <Link
+                                    href={`/projects/edit/${project.id}`}
+                                    className="text-blue-500 hover:underline p-2 bg-blue-100 rounded-md hover:bg-blue-200 transition duration-200"
+                                >
                                     Edit
                                 </Link>
-                                <button className="text-red-500 hover:underline">
+                                <button className="text-red-500 hover:underline p-2 bg-red-100 rounded-md hover:bg-red-200 transition duration-200">
                                     Delete
                                 </button>
                             </td>

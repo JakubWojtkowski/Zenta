@@ -106,12 +106,10 @@ export async function updateTask(formData: FormData) {
 interface AddTimeLogParams {
     taskId: string;
     duration: number;
-    userId: string;
 }
 
 // Akcja do dodawania logu czasu
 export async function addTimeLog({ taskId, duration }: AddTimeLogParams) {
-    console.log("okk");
     // Pobieranie sesji użytkownika
     const session = await getServerSession(authOptions);
 
@@ -121,19 +119,18 @@ export async function addTimeLog({ taskId, duration }: AddTimeLogParams) {
     }
 
     // Pobieranie ID użytkownika z sesji
-    const userId = session.user.id;
+    const user = session.user;
+
 
     // Dodanie logu czasu do bazy danych
-    
     try {
         const timeLog = await prisma.timeLog.create({
             data: {
                 duration,
                 task: { connect: { id: taskId } },
-                user: { connect: { id: userId } },
+                user: { connect: { username: user.username } },
             },
         });
-        console.log(taskId, userId, timeLog);
 
         // Zwrot nowo utworzonego logu czasu
         return timeLog;

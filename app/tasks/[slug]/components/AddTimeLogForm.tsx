@@ -1,19 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { addTimeLog } from "@/actions/tasks"; // Akcja do dodawania logu czasu
+import { addTimeLog } from "@/actions/tasks";
 
-
-export function AddTimeLogForm({ params }) {
+export function AddTimeLogForm({ task }: { task: { id: string; taskName: string } }) {
     const [duration, setDuration] = useState<number>(0);
     const [error, setError] = useState<string | null>(null);
-
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
 
         try {
-            await addTimeLog({});
+            await addTimeLog({ taskId: task.id, duration });
             setDuration(0); // Resetowanie formularza
             setError(null); // Resetowanie błędu
         } catch (error: unknown) {
@@ -24,10 +22,10 @@ export function AddTimeLogForm({ params }) {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
-            <h3 className="text-xl font-semibold">Dodaj log czasu</h3>
+            <h3 className="text-xl font-semibold">Dodaj log czasu dla: {task.taskName}</h3>
 
             <div>
-                <label htmlFor="duration" className="block text-gray-700">Czas pracy (w godzinach):</label>
+                <label htmlFor="duration" className="block text-gray-700">Czas pracy (w minutach):</label>
                 <input
                     type="number"
                     id="duration"
