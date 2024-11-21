@@ -17,9 +17,9 @@ const Sidebar = async () => {
 
             {/* Navigation Links */}
             <nav className="flex flex-col space-y-4">
-                <Link href="/projects" className="flex items-center gap-2 p-2 hover:bg-gray-700 rounded-md">
+                <Link href={`/my-tasks`} className="flex items-center gap-2 p-2 hover:bg-gray-700 rounded-md">
                     <FileText className="w-5 h-5" />
-                    <span>Projects</span>
+                    <span>My Tasks</span>
                 </Link>
 
                 <Link href="/settings" className="flex items-center gap-2 p-2 hover:bg-gray-700 rounded-md">
