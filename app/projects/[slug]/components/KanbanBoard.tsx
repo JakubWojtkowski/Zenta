@@ -26,8 +26,10 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks }) => {
         try {
             const { source, destination, draggableId } = result;
 
+            // Jeśli brak miejsca docelowego, zakończ
             if (!destination) return;
 
+            // Jeśli pozycja się nie zmienia, zakończ
             if (
                 source.droppableId === destination.droppableId &&
                 source.index === destination.index
@@ -35,27 +37,34 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks }) => {
                 return;
             }
 
+            // Pobierz kolumny źródłową i docelową
             const startColumnTasks = columns[source.droppableId];
             const finishColumnTasks = columns[destination.droppableId];
 
             if (!startColumnTasks || !finishColumnTasks) return;
 
+            // Przenieś zadanie między kolumnami
             const updatedStartColumn = [...startColumnTasks];
             const [movedTask] = updatedStartColumn.splice(source.index, 1);
+            console.log(movedTask);
 
             const updatedFinishColumn = [...finishColumnTasks];
             movedTask.status = destination.droppableId as Task["status"];
             updatedFinishColumn.splice(destination.index, 0, movedTask);
 
+            // Zaktualizuj stan
             setColumns((prev) => ({
                 ...prev,
                 [source.droppableId]: updatedStartColumn,
                 [destination.droppableId]: updatedFinishColumn,
             }));
 
+            // Zaktualizuj status zadania na serwerze, w tym taskName i priority
             const formData = new FormData();
             formData.append("taskId", draggableId);
             formData.append("status", destination.droppableId);
+            formData.append("taskName", movedTask.taskName);  // Dodajemy taskName
+            formData.append("priority", movedTask.priority);  // Dodajemy priority
             await updateTask(formData);
         } catch (error) {
             console.error("Error updating task:", error);
@@ -66,14 +75,20 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks }) => {
         <DragDropContext onDragEnd={onDragEnd}>
             <div className="grid grid-cols-4 gap-4">
                 {Object.entries(columns).map(([columnId, columnTasks]) => (
-                    <Droppable droppableId={columnId.toString()} key={columnId.toString()} isDropDisabled={false}>
+                    <Droppable droppableId={columnId} key={columnId} isDropDisabled={false} isCombineEnabled ignoreContainerClipping>
                         {(provided) => (
                             <div
-                                ref={provided.innerRef}
-                                {...provided.droppableProps}
                                 className="bg-gray-100 p-4 rounded-lg shadow-md"
+                                {...provided.droppableProps}
+                                ref={provided.innerRef}
                             >
-                                <h2 className="text-xl font-bold mb-4">{columnId}</h2>
+                                <h2 className="font-bold mb-4 text-gray-400 flex items-center gap-2"><b className={`text-3xl ${columnId === "BACKLOG"
+                                    ? "text-red-800"
+                                    : columnId === "TODO"
+                                        ? "text-yellow text-blue-400"
+                                        : columnId === "IN_PROGRESS" ? "text-amber-500" : "text-green-500"
+                                    }`}>_</b>{columnId}</h2>
+
                                 {columnTasks.map((task, index) => (
                                     <Draggable draggableId={task.id} index={index} key={task.id}>
                                         {(provided) => (
@@ -88,13 +103,12 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks }) => {
                                                     {task.description || "No description"}
                                                 </p>
                                                 <span
-                                                    className={`text-xs px-2 py-1 rounded-full ${
-                                                        task.priority === "HIGH"
-                                                            ? "bg-red-200 text-red-800"
-                                                            : task.priority === "MEDIUM"
+                                                    className={`text-xs px-2 py-1 rounded-full ${task.priority === "HIGH"
+                                                        ? "bg-red-200 text-red-800"
+                                                        : task.priority === "MEDIUM"
                                                             ? "bg-yellow-200 text-yellow-800"
                                                             : "bg-green-200 text-green-800"
-                                                    }`}
+                                                        }`}
                                                 >
                                                     {task.priority}
                                                 </span>
@@ -108,7 +122,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks }) => {
                     </Droppable>
                 ))}
             </div>
-        </DragDropContext>
+        </DragDropContext >
     );
 };
 

@@ -39,16 +39,16 @@ export default async function ProjectPage({ params }: { params: { slug: string }
     }
 
     return (
-        <div className="container mx-auto px-4 pt-12">
+        <div className="container mx-auto px-4 sm:px-20 sm:py-10">
             {/* Ścieżka */}
-            <div className="text-center mb-12 flex gap-2 text-gray-400 font-bold tracking-wider">
+            <div className="text-center mb-12 flex gap-1 text-gray-400 font-bold text-sm tracking-wide">
                 <HouseIcon />
                 <SlashIcon />
                 <span>Projects</span>
                 <SlashIcon />
                 <span>{project.title}</span>
                 <SlashIcon />
-                <span className="text-gray-700">Kanban Board</span>
+                <span className="text-gray-600">Kanban Board</span>
             </div>
 
             {/* Wyświetlanie zadań */}
