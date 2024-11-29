@@ -7,12 +7,16 @@ const page = async () => {
   const session = await getServerSession(authOptions);
 
   return (
-    <div className="m-16">
+    <div>
       {
         session?.user ? (
           <div className="flex flex-row w-full">
-            <Sidebar />
-            <ProjectsPage />
+            <div className="lg:flex-[0.15] flex-[0.4]">
+              <Sidebar />
+            </div>
+            <div className="lg:flex-[0.85] flex-[0.6] sm:p-16 ">
+              <ProjectsPage />
+            </div>
           </div>
         ) : (<div>
           <h2 className="text-2xl">Please login to see this page</h2>

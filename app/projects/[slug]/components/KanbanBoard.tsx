@@ -4,67 +4,74 @@ import React from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import { updateTask } from "@/actions/tasks";
 import { Task } from "@/types/types";
+import { PlusIcon } from "lucide-react";
 
 interface KanbanBoardProps {
     tasks: Task[];
 }
 
+const truncateText = (text: string, maxLength: number): string =>
+    text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
+
 const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks }) => {
     const [columns, setColumns] = React.useState<{
-        BACKLOG: Task[];
+        // BACKLOG: Task[];
         TODO: Task[];
         IN_PROGRESS: Task[];
         DONE: Task[];
     }>(() => ({
-        BACKLOG: tasks.filter((task) => task.status === "BACKLOG"),
+        // BACKLOG: tasks.filter((task) => task.status === "BACKLOG"),
         TODO: tasks.filter((task) => task.status === "TODO"),
         IN_PROGRESS: tasks.filter((task) => task.status === "IN_PROGRESS"),
         DONE: tasks.filter((task) => task.status === "DONE"),
     }));
 
+    const getUpdatedColumns = (sourceId: string, destinationId: string, task: Task, sourceIndex: number, destIndex: number) => {
+        const sourceTasks = Array.from(columns[sourceId as keyof typeof columns]);
+        const destinationTasks = Array.from(columns[destinationId as keyof typeof columns]);
+
+        // Remove from source and update
+        sourceTasks.splice(sourceIndex, 1);
+        destinationTasks.splice(destIndex, 0, task);
+
+        return {
+            ...columns,
+            [sourceId]: sourceTasks,
+            [destinationId]: destinationTasks,
+        };
+    };
+
     const onDragEnd = async (result: DropResult) => {
+        const { source, destination, draggableId } = result;
+
+        // Jeśli brak zmiany pozycji lub nie ma miejsca docelowego
+        if (!destination || (source.droppableId === destination.droppableId && source.index === destination.index)) {
+            return;
+        }
+
+        // Znajdź przeciągnięte zadanie
+        const draggedTask = columns[source.droppableId as keyof typeof columns][source.index];
+        if (!draggedTask) return;
+
+        // Zmień status zadania
+        const updatedColumns = getUpdatedColumns(
+            source.droppableId,
+            destination.droppableId,
+            { ...draggedTask, status: destination.droppableId as Task["status"] },
+            source.index,
+            destination.index
+        );
+
+        // Zaktualizuj lokalny stan
+        setColumns(updatedColumns);
+
+        // Zaktualizuj serwer
         try {
-            const { source, destination, draggableId } = result;
-
-            // Jeśli brak miejsca docelowego, zakończ
-            if (!destination) return;
-
-            // Jeśli pozycja się nie zmienia, zakończ
-            if (
-                source.droppableId === destination.droppableId &&
-                source.index === destination.index
-            ) {
-                return;
-            }
-
-            // Pobierz kolumny źródłową i docelową
-            const startColumnTasks = columns[source.droppableId];
-            const finishColumnTasks = columns[destination.droppableId];
-
-            if (!startColumnTasks || !finishColumnTasks) return;
-
-            // Przenieś zadanie między kolumnami
-            const updatedStartColumn = [...startColumnTasks];
-            const [movedTask] = updatedStartColumn.splice(source.index, 1);
-            console.log(movedTask);
-
-            const updatedFinishColumn = [...finishColumnTasks];
-            movedTask.status = destination.droppableId as Task["status"];
-            updatedFinishColumn.splice(destination.index, 0, movedTask);
-
-            // Zaktualizuj stan
-            setColumns((prev) => ({
-                ...prev,
-                [source.droppableId]: updatedStartColumn,
-                [destination.droppableId]: updatedFinishColumn,
-            }));
-
-            // Zaktualizuj status zadania na serwerze, w tym taskName i priority
             const formData = new FormData();
             formData.append("taskId", draggableId);
             formData.append("status", destination.droppableId);
-            formData.append("taskName", movedTask.taskName);  // Dodajemy taskName
-            formData.append("priority", movedTask.priority);  // Dodajemy priority
+            formData.append("taskName", draggedTask.taskName);
+            formData.append("priority", draggedTask.priority);
             await updateTask(formData);
         } catch (error) {
             console.error("Error updating task:", error);
@@ -73,34 +80,36 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks }) => {
 
     return (
         <DragDropContext onDragEnd={onDragEnd}>
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {Object.entries(columns).map(([columnId, columnTasks]) => (
-                    <Droppable droppableId={columnId} key={columnId} isDropDisabled={false} isCombineEnabled ignoreContainerClipping>
+                    <Droppable droppableId={columnId} key={columnId}>
                         {(provided) => (
                             <div
                                 className="bg-gray-100 p-4 rounded-lg shadow-md"
                                 {...provided.droppableProps}
                                 ref={provided.innerRef}
                             >
-                                <h2 className="font-bold mb-4 text-gray-400 flex items-center gap-2"><b className={`text-3xl ${columnId === "BACKLOG"
-                                    ? "text-red-800"
-                                    : columnId === "TODO"
-                                        ? "text-yellow text-blue-400"
-                                        : columnId === "IN_PROGRESS" ? "text-amber-500" : "text-green-500"
-                                    }`}>_</b>{columnId}</h2>
+                                <h2 className="font-bold mb-4 text-gray-400 flex items-center gap-2">
+                                    {columnId}
+                                </h2>
+                                <div className="text-gray-600">
+                                    <PlusIcon />
+                                </div>
 
                                 {columnTasks.map((task, index) => (
-                                    <Draggable draggableId={task.id} index={index} key={task.id}>
+                                    <Draggable draggableId={task.id.toString()} index={index} key={task.id.toString()}>
                                         {(provided) => (
                                             <div
                                                 ref={provided.innerRef}
                                                 {...provided.draggableProps}
                                                 {...provided.dragHandleProps}
-                                                className="bg-white p-3 mb-3 rounded-md shadow-sm"
+                                                className="bg-white p-3 mb-3 rounded-md shadow-sm overflow-hidden"
                                             >
-                                                <h3 className="font-semibold">{task.taskName}</h3>
-                                                <p className="text-sm text-gray-600">
-                                                    {task.description || "No description"}
+                                                <h3 className="font-semibold text-gray-800 truncate">
+                                                    {truncateText(task.taskName, 10)}
+                                                </h3>
+                                                <p className="text-sm text-gray-600 truncate">
+                                                    {truncateText(task.description || "No description", 20)}
                                                 </p>
                                                 <span
                                                     className={`text-xs px-2 py-1 rounded-full ${task.priority === "HIGH"
@@ -112,6 +121,12 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks }) => {
                                                 >
                                                     {task.priority}
                                                 </span>
+                                                <a
+                                                    href={`/tasks/${task.id}`}
+                                                    className="text-blue-500 text-xs underline mt-2 block"
+                                                >
+                                                    View Task
+                                                </a>
                                             </div>
                                         )}
                                     </Draggable>
@@ -122,7 +137,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks }) => {
                     </Droppable>
                 ))}
             </div>
-        </DragDropContext >
+        </DragDropContext>
     );
 };
 

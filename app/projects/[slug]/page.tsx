@@ -1,10 +1,8 @@
-// import Link from "next/link";
 import prisma from "@/lib/db";
-import { AddNewTaskForm } from "../[slug]/components/AddNewTaskForm";
-// import { generateAvatar } from "@/actions/users";
+// import { AddNewTaskForm } from "../[slug]/components/AddNewTaskForm";
 import { HouseIcon, SlashIcon } from "lucide-react";
-// import { getPriorityColor, getStatusColor } from "@/lib/getColor";
-import KanbanBoard from "./components/KanbanBoard";
+// import KanbanBoard from "./components/KanbanBoard";
+import BacklogPage from "./components/Backlog";
 
 export default async function ProjectPage({ params }: { params: { slug: string } }) {
     const { slug } = params;
@@ -47,44 +45,44 @@ export default async function ProjectPage({ params }: { params: { slug: string }
                 <span>Projects</span>
                 <SlashIcon />
                 <span>{project.title}</span>
-                <SlashIcon />
-                <span className="text-gray-600">Kanban Board</span>
             </div>
+
+            {/* Przekazanie projectId */}
+            <BacklogPage projectId={project.id} />
 
             {/* Wyświetlanie zadań */}
-            <div className="mb-6">
-                <h2 className="text-3xl font-semibold text-gray-800">{project.title}</h2>
-                <p className="text-gray-400">
-                    {project.createdAt
-                        ? `${new Date(project.createdAt).toLocaleDateString("en-GB", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "2-digit",
-                        })} ${new Date(project.createdAt).toLocaleTimeString("en-GB", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            hour12: true,
-                        })}`
-                        : "Brak daty początkowej"}
-                </p>
-                {project.tasks.length === 0 ? (
-                    <p className="text-gray-600 mt-2">No tasks available.</p>
-                ) : (
-                    <div className="overflow-x-auto mt-4">
-                        <div className="mt-4">
-                            <KanbanBoard
-                                tasks={project.tasks.map((task) => ({
-                                    ...task,
-                                    description: task.description ?? undefined, // Zmiana null na undefined
-                                }))}
-                            />
+            <div className="col-span-3">
+                <div className="mb-6">
+                    <h2 className="text-3xl font-semibold text-gray-800">{project.title}</h2>
+                    <p className="text-gray-400">
+                        {project.createdAt
+                            ? `${new Date(project.createdAt).toLocaleDateString("en-GB", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "2-digit",
+                            })} ${new Date(project.createdAt).toLocaleTimeString("en-GB", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: true,
+                            })}`
+                            : "Brak daty początkowej"}
+                    </p>
+                    {/* {project.tasks.length === 0 ? (
+                        <p className="text-gray-600 mt-2">No tasks available.</p>
+                    ) : (
+                        <div className="overflow-x-auto mt-4">
+                            <div className="mt-4">
+                                <KanbanBoard
+                                    tasks={project.tasks.map((task) => ({
+                                        ...task,
+                                        description: task.description ?? undefined, // Zmiana null na undefined
+                                    }))}
+                                />
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )} */}
+                </div>
             </div>
-
-            {/* Formularz dodawania zadania */}
-            <AddNewTaskForm project={project} />
         </div>
     );
 }

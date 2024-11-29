@@ -9,10 +9,10 @@ const Navbar = async () => {
     const session = await getServerSession(authOptions);
 
     return (
-        <div className="py-4 w-full px-8 md:px-16 border-b-2">
+        <div className="py-4 w-full px-6 md:px-10 border-b-2 border-gray-600 bg-gray-800 text-white">
             <div className="container flex items-center justify-between">
 
-                <Link href="/" aria-label="Go to Home" className="flex items-center text-lg font-bold text-gray-900">
+                <Link href="/" aria-label="Go to Home" className="flex items-center text-lg font-bold ">
                     <Home className="mr-2" />
                     Home
                 </Link>
@@ -20,7 +20,7 @@ const Navbar = async () => {
                 <div className="flex items-center gap-4">
                     {session?.user ? (
                         <>
-                            <span className="font-bold text-gray-700">Hi! {session?.user.username}</span>
+                            <span className="font-bold">Hi ! {session?.user.username}</span>
                             <UserAccountnav />
                         </>
 

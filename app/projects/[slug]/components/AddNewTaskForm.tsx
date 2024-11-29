@@ -2,7 +2,7 @@ import { Project } from "@prisma/client";
 import { createTask } from "@/actions/tasks";
 
 interface AddNewTaskFormProps {
-    project: Project;
+    project: Project & { members?: { user: { id: string; username: string } }[] }; // Uwzględnione opcjonalne pole members
 }
 
 export const AddNewTaskForm = ({ project }: AddNewTaskFormProps) => {
@@ -20,7 +20,7 @@ export const AddNewTaskForm = ({ project }: AddNewTaskFormProps) => {
                         placeholder="Task Name"
                         className="w-full p-3 border border-gray-300 rounded-md"
                         required
-                        minLength={3}  // Minimalna długość nazwy zadania
+                        minLength={3} // Minimalna długość nazwy zadania
                     />
                 </div>
 
@@ -31,7 +31,7 @@ export const AddNewTaskForm = ({ project }: AddNewTaskFormProps) => {
                         rows={4}
                         className="w-full p-3 border border-gray-300 rounded-md"
                         required
-                        minLength={10}  // Minimalna długość opisu
+                        minLength={10} // Minimalna długość opisu
                     />
                 </div>
 
@@ -53,12 +53,15 @@ export const AddNewTaskForm = ({ project }: AddNewTaskFormProps) => {
                             name="assignedTo"
                             className="w-full p-3 border border-gray-300 rounded-md"
                             required
+                            disabled={!project.members || project.members.length === 0} // Wyłącz, jeśli brak członków
                         >
-                            {project?.members.map((member) => (
+                            {project?.members?.map((member) => (
                                 <option key={member.user.id} value={member.user.id}>
                                     {member.user.username}
                                 </option>
-                            ))}
+                            )) || (
+                                    <option value="">No members available</option> // Komunikat, gdy brak członków
+                                )}
                         </select>
                     </div>
                 </div>
@@ -71,7 +74,7 @@ export const AddNewTaskForm = ({ project }: AddNewTaskFormProps) => {
                             placeholder="Estimated Time (minutes)"
                             className="w-full p-3 border border-gray-300 rounded-md"
                             required
-                            min={1}  // Minimalna wartość dla szacowanego czasu
+                            min={1} // Minimalna wartość dla szacowanego czasu
                         />
                     </div>
                     <div className="w-1/2">
@@ -81,7 +84,7 @@ export const AddNewTaskForm = ({ project }: AddNewTaskFormProps) => {
                             placeholder="Estimated Points"
                             className="w-full p-3 border border-gray-300 rounded-md"
                             required
-                            min={1}  // Minimalna wartość dla szacowanych punktów
+                            min={1} // Minimalna wartość dla szacowanych punktów
                         />
                     </div>
                 </div>
