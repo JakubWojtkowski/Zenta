@@ -1,7 +1,6 @@
 import prisma from "@/lib/db";
 // import { AddNewTaskForm } from "../[slug]/components/AddNewTaskForm";
 import { HouseIcon, SlashIcon } from "lucide-react";
-// import KanbanBoard from "./components/KanbanBoard";
 import BacklogPage from "./components/Backlog";
 
 export default async function ProjectPage({ params }: { params: { slug: string } }) {

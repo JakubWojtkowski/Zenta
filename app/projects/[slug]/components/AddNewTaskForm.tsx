@@ -1,101 +1,182 @@
+"use client";
+
+import { useState } from "react";
 import { Project } from "@prisma/client";
 import { createTask } from "@/actions/tasks";
 
 interface AddNewTaskFormProps {
-    project: Project & { members?: { user: { id: string; username: string } }[] }; // Uwzględnione opcjonalne pole members
+    project: Project & { members?: { user: { id: string; username: string } }[] };
 }
 
 export const AddNewTaskForm = ({ project }: AddNewTaskFormProps) => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    const toggleSidebar = () => setIsOpen((prev) => !prev);
+
     return (
-        <div className="mt-8 p-6 bg-white rounded-lg shadow-md">
-            <h3 className="text-2xl font-semibold text-gray-800 mb-4">Add New Task</h3>
+        <>
+            {/* Przycisk otwierający modal */}
+            <button
+                onClick={toggleSidebar}
+                className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
+            >
+                Add New Task
+            </button>
 
-            <form action={createTask} className="space-y-4">
-                <input type="hidden" name="projectId" value={project?.id} />
+            {/* Modal sidebar */}
+            {isOpen && (
+                <div className="fixed inset-0 z-50 flex">
+                    {/* Tło przyciemniające */}
+                    <div
+                        onClick={toggleSidebar}
+                        className="flex-1 bg-black bg-opacity-50"
+                    ></div>
 
-                <div>
-                    <input
-                        type="text"
-                        name="taskName"
-                        placeholder="Task Name"
-                        className="w-full p-3 border border-gray-300 rounded-md"
-                        required
-                        minLength={3} // Minimalna długość nazwy zadania
-                    />
-                </div>
+                    {/* Zawartość sidebaru */}
+                    <div className="w-1/4 bg-white shadow-lg p-6 overflow-y-auto">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-2xl font-semibold text-gray-800">Add New Task</h3>
+                            <button
+                                onClick={toggleSidebar}
+                                className="text-gray-400 hover:text-gray-600"
+                            >
+                                ✕
+                            </button>
+                        </div>
 
-                <div>
-                    <textarea
-                        name="description"
-                        placeholder="Task Description"
-                        rows={4}
-                        className="w-full p-3 border border-gray-300 rounded-md"
-                        required
-                        minLength={10} // Minimalna długość opisu
-                    />
-                </div>
+                        <form action={createTask} className="space-y-4">
+                            <input type="hidden" name="projectId" value={project?.id} />
 
-                <div className="flex space-x-4">
-                    <div className="w-1/2">
-                        <select
-                            name="priority"
-                            className="w-full p-3 border border-gray-300 rounded-md"
-                            required
-                        >
-                            <option value="LOW">Low</option>
-                            <option value="MEDIUM">Medium</option>
-                            <option value="HIGH">High</option>
-                            <option value="URGENT">Urgent</option>
-                        </select>
+                            {/* Pole nazwy zadania */}
+                            <div>
+                                <label htmlFor="taskName" className="block text-gray-700 font-medium">
+                                    Task Name
+                                </label>
+                                <input
+                                    id="taskName"
+                                    type="text"
+                                    name="taskName"
+                                    placeholder="Enter task name"
+                                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                    required
+                                    minLength={3}
+                                />
+                            </div>
+
+                            {/* Pole opisu */}
+                            <div>
+                                <label
+                                    htmlFor="description"
+                                    className="block text-gray-700 font-medium"
+                                >
+                                    Task Description
+                                </label>
+                                <textarea
+                                    id="description"
+                                    name="description"
+                                    placeholder="Enter task description"
+                                    rows={4}
+                                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                    required
+                                    minLength={10}
+                                ></textarea>
+                            </div>
+
+                            {/* Priorytet i przydzielenie użytkownika */}
+                            <div className="flex space-x-4">
+                                <div className="w-1/2">
+                                    <label
+                                        htmlFor="priority"
+                                        className="block text-gray-700 font-medium"
+                                    >
+                                        Priority
+                                    </label>
+                                    <select
+                                        id="priority"
+                                        name="priority"
+                                        className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                        required
+                                    >
+                                        <option value="LOW">Low</option>
+                                        <option value="MEDIUM">Medium</option>
+                                        <option value="HIGH">High</option>
+                                        <option value="URGENT">Urgent</option>
+                                    </select>
+                                </div>
+                                <div className="w-1/2">
+                                    <label
+                                        htmlFor="assignedTo"
+                                        className="block text-gray-700 font-medium"
+                                    >
+                                        Assign To
+                                    </label>
+                                    <select
+                                        id="assignedTo"
+                                        name="assignedTo"
+                                        className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                        required
+                                        disabled={!project.members || project.members.length === 0}
+                                    >
+                                        {project?.members?.map((member) => (
+                                            <option key={member.user.id} value={member.user.id}>
+                                                {member.user.username}
+                                            </option>
+                                        )) || (
+                                            <option value="">No members available</option>
+                                        )}
+                                    </select>
+                                </div>
+                            </div>
+
+                            {/* Estymacja czasu i punktów */}
+                            <div className="flex space-x-4">
+                                <div className="w-1/2">
+                                    <label
+                                        htmlFor="timeEstimate"
+                                        className="block text-gray-700 font-medium"
+                                    >
+                                        Estimated Time (minutes)
+                                    </label>
+                                    <input
+                                        id="timeEstimate"
+                                        type="number"
+                                        name="timeEstimate"
+                                        placeholder="e.g. 120"
+                                        className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                        required
+                                        min={1}
+                                    />
+                                </div>
+                                <div className="w-1/2">
+                                    <label
+                                        htmlFor="estimatedPoints"
+                                        className="block text-gray-700 font-medium"
+                                    >
+                                        Estimated Points
+                                    </label>
+                                    <input
+                                        id="estimatedPoints"
+                                        type="number"
+                                        name="estimatedPoints"
+                                        placeholder="e.g. 5"
+                                        className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                        required
+                                        min={1}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Przycisk zapisu */}
+                            <button
+                                type="submit"
+                                className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition duration-300"
+                            >
+                                Add Task
+                            </button>
+                        </form>
                     </div>
-                    <div className="w-1/2">
-                        <select
-                            name="assignedTo"
-                            className="w-full p-3 border border-gray-300 rounded-md"
-                            required
-                            disabled={!project.members || project.members.length === 0} // Wyłącz, jeśli brak członków
-                        >
-                            {project?.members?.map((member) => (
-                                <option key={member.user.id} value={member.user.id}>
-                                    {member.user.username}
-                                </option>
-                            )) || (
-                                    <option value="">No members available</option> // Komunikat, gdy brak członków
-                                )}
-                        </select>
-                    </div>
                 </div>
-
-                <div className="flex space-x-4">
-                    <div className="w-1/2">
-                        <input
-                            type="number"
-                            name="timeEstimate"
-                            placeholder="Estimated Time (minutes)"
-                            className="w-full p-3 border border-gray-300 rounded-md"
-                            required
-                            min={1} // Minimalna wartość dla szacowanego czasu
-                        />
-                    </div>
-                    <div className="w-1/2">
-                        <input
-                            type="number"
-                            name="estimatedPoints"
-                            placeholder="Estimated Points"
-                            className="w-full p-3 border border-gray-300 rounded-md"
-                            required
-                            min={1} // Minimalna wartość dla szacowanych punktów
-                        />
-                    </div>
-                </div>
-
-                <button
-                    type="submit"
-                    className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition duration-300"
-                >
-                    Add Task
-                </button>
-            </form>
-        </div>
+            )}
+        </>
     );
 };
