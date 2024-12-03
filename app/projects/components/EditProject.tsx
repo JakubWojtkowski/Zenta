@@ -1,19 +1,25 @@
 "use client";
 
-import { createProject } from "@/actions/projects";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as Label from "@radix-ui/react-label";
 import { X } from "lucide-react";
-// import { IoClose } from "react-icons/io5";
+import { updateProject } from "@/actions/projects";  // Upewnij się, że masz funkcję do aktualizacji projektu
 
-export default function AddNewProject() {
+type EditProjectProps = {
+    projectId: string;
+    initialTitle: string;
+    initialContent: string;
+};
+
+export default function EditProject({ projectId, initialTitle, initialContent }: EditProjectProps) {
     const [isOpen, setIsOpen] = useState(false);
-    const {
-        register,
-        handleSubmit,
-        reset,
-    } = useForm();
+    const { register, handleSubmit, reset } = useForm({
+        defaultValues: {
+            title: initialTitle,
+            content: initialContent,
+        },
+    });
 
     const onSubmit = async (data: { title: string; content: string }) => {
         const formData = new FormData();
@@ -21,11 +27,11 @@ export default function AddNewProject() {
         formData.append("content", data.content);
 
         try {
-            await createProject(formData);
+            await updateProject(projectId, formData);
             reset();
-            setIsOpen(false);
+            setIsOpen(false); // Zamknięcie modalu po udanej aktualizacji
         } catch (error) {
-            console.error("Error creating project:", error);
+            console.error("Error updating project:", error);
         }
     };
 
@@ -34,9 +40,9 @@ export default function AddNewProject() {
             {/* Button to open the modal */}
             <button
                 onClick={() => setIsOpen(true)}
-                className="bg-blue-500 text-white font-medium px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200"
+                className="text-sm text-blue-400 bg-blue-50 p-2 rounded-md"
             >
-                + New Project
+                Edit
             </button>
 
             {/* Modal */}
@@ -48,7 +54,7 @@ export default function AddNewProject() {
                         onClick={() => setIsOpen(false)}
                     ></div>
 
-                    {/* Sidebar */}
+                    {/* Modal Sidebar */}
                     <div className="relative bg-white shadow-xl w-[25%] max-w-sm h-full p-6 flex flex-col">
                         {/* Close button */}
                         <button
@@ -58,8 +64,8 @@ export default function AddNewProject() {
                             <X />
                         </button>
 
-                        <h2 className="text-2xl font-bold mb-6 text-gray-800">
-                            Create New Project
+                        <h2 className="text-2xl font-bold mb-6 text-gray-700">
+                            {initialTitle}.
                         </h2>
 
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -102,7 +108,7 @@ export default function AddNewProject() {
                                 type="submit"
                                 className="w-full bg-blue-500 text-white font-medium py-2 rounded-md hover:bg-blue-600 transition duration-200"
                             >
-                                Create Project
+                                Update
                             </button>
                         </form>
                     </div>

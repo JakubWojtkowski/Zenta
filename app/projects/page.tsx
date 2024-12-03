@@ -2,8 +2,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/db";
 import Link from "next/link";
-// import { addMemberToProject, generateAvatar } from "@/actions/users";
+import { generateAvatar } from "@/actions/users";
 import AddNewProject from "./components/AddNewProject";
+import EditProject from "./components/EditProject"; // Zmieniamy nazwę na EditProjectModal
+import AddUserToProject from "./components/AddUserToProject";
 
 export default async function ProjectsPage() {
     const session = await getServerSession(authOptions);
@@ -48,10 +50,11 @@ export default async function ProjectsPage() {
                         <th className="px-6 py-4 text-gray-700 font-medium">Project Name</th>
                         <th className="px-6 py-4 text-gray-700 font-medium">Author</th>
                         <th className="px-6 py-4 text-gray-700 font-medium">Members</th>
+                        <th className="px-6 py-4 text-gray-700 font-medium">Actions</th> {/* Nowa kolumna na akcje */}
                     </tr>
                 </thead>
                 <tbody>
-                    {user.projects.map((project) => (
+                    {user.projects?.map((project) => (
                         <tr key={project.id} className="hover:bg-gray-50">
                             <td className="px-6 py-4">{project.id.toString().slice(0, 6)}</td>
                             <td className="px-6 py-4">
@@ -59,11 +62,43 @@ export default async function ProjectsPage() {
                                     {project.title}
                                 </Link>
                             </td>
-                            <td className="px-6 py-4">
-                                {project.author?.username || "Unknown"}
+                            <td className="px-6 py-4 flex">
+                                <div className="border border-green-300 rounded p-1 bg-green-100 text-green-400 ">{project.author?.username || "Unknown"}</div>
                             </td>
                             <td className="px-6 py-4">
-                                {project.members.map((member) => member.user.username).join(", ")}
+                                <div className="flex gap-2">
+                                    {project?.members.slice(0, 3).map((member) => (
+                                        <div
+                                            key={member.user.id}
+                                            className="w-8 h-8 rounded-full flex items-center justify-center bg-gray-300 text-gray-700 font-bold"
+                                        >
+                                            <span className="text-gray-600">{generateAvatar(member.user.username)}</span>
+                                        </div>
+                                    ))}
+                                    {project?.members && (
+                                        <>
+                                            <AddUserToProject
+                                                projectId={project.id.toString()}
+                                                initialTitle={project.title ?? ""}
+                                                initialContent={project.content ?? ""}
+                                            />
+                                        </>
+
+                                    )}
+                                </div>
+                            </td>
+                            <td className="px-6 py-4 flex gap-4">
+                                <EditProject
+                                    projectId={project.id.toString()}
+                                    initialTitle={project.title ?? ""}
+                                    initialContent={project.content ?? ""}
+                                />
+                                <Link
+                                    href={`/projects/delete/${project.id}`}
+                                    className="text-sm text-red-400 bg-red-50 p-2 rounded-md"
+                                >
+                                    Delete
+                                </Link>
                             </td>
                         </tr>
                     ))}

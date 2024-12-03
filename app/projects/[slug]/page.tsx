@@ -1,7 +1,7 @@
 import prisma from "@/lib/db";
-// import { AddNewTaskForm } from "../[slug]/components/AddNewTaskForm";
-import { HouseIcon, SlashIcon } from "lucide-react";
+import { HouseIcon, SlashIcon, SearchIcon } from "lucide-react";
 import BacklogPage from "./components/Backlog";
+import { generateAvatar } from "@/actions/users";
 
 export default async function ProjectPage({ params }: { params: { slug: string } }) {
     const { slug } = params;
@@ -46,41 +46,63 @@ export default async function ProjectPage({ params }: { params: { slug: string }
                 <span>{project.title}</span>
             </div>
 
-            {/* Przekazanie projectId */}
-            <BacklogPage projectId={project.id} />
+            <div className="flex flex-col gap-6">
+                <div className="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 className="text-3xl font-semibold text-gray-800">{project.title}</h2>
+                        <p className="text-gray-400">
+                            {project.createdAt
+                                ? `${new Date(project.createdAt).toLocaleDateString("en-GB", {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "2-digit",
+                                })} ${new Date(project.createdAt).toLocaleTimeString("en-GB", {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    hour12: true,
+                                })}`
+                                : "Brak daty początkowej"}
+                        </p>
+                    </div>
 
-            {/* Wyświetlanie zadań */}
-            <div className="col-span-3">
-                <div className="mb-6">
-                    <h2 className="text-3xl font-semibold text-gray-800">{project.title}</h2>
-                    <p className="text-gray-400">
-                        {project.createdAt
-                            ? `${new Date(project.createdAt).toLocaleDateString("en-GB", {
-                                day: "2-digit",
-                                month: "short",
-                                year: "2-digit",
-                            })} ${new Date(project.createdAt).toLocaleTimeString("en-GB", {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                hour12: true,
-                            })}`
-                            : "Brak daty początkowej"}
-                    </p>
-                    {/* {project.tasks.length === 0 ? (
-                        <p className="text-gray-600 mt-2">No tasks available.</p>
-                    ) : (
-                        <div className="overflow-x-auto mt-4">
-                            <div className="mt-4">
-                                <KanbanBoard
-                                    tasks={project.tasks.map((task) => ({
-                                        ...task,
-                                        description: task.description ?? undefined, // Zmiana null na undefined
-                                    }))}
-                                />
-                            </div>
+                    {/* Pasek narzędzi */}
+                    <div className="flex items-center gap-4">
+                        {/* Pole wyszukiwania */}
+                        <div className="relative">
+                            <input
+                                type="text"
+                                placeholder="Search..."
+                                className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                            />
+                            <SearchIcon className="absolute left-2 top-2.5 text-gray-500 w-5 h-5" />
                         </div>
-                    )} */}
+
+                        {/* Avatary użytkowników */}
+                        <div className="flex -space-x-2">
+                            {project.members.map((member) => (
+                                <>
+                                    <div
+                                        className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-300 text-gray-700 font-bold"
+                                    >
+                                        <span className="text-gray-600">{generateAvatar(member.user.username)}</span>
+                                    </div>
+
+                                </>
+                            ))}
+                        </div>
+
+                        {/* Filtry */}
+                        <button className="px-4 py-2 bg-gray-200 rounded-md text-sm font-medium hover:bg-gray-300">
+                            Only my issues
+                        </button>
+                        <button className="px-4 py-2 bg-gray-200 rounded-md text-sm font-medium hover:bg-gray-300">
+                            Recently Updated
+                        </button>
+                    </div>
                 </div>
+
+                {/* Przekazanie projectId */}
+                <BacklogPage projectId={project.id} />
             </div>
         </div>
     );

@@ -38,14 +38,17 @@ export async function addMemberToProject(formData: FormData) {
     }
 }
 
-export async function generateAvatar(username: string) {
-    if (username.length < 2) {
+export async function generateAvatar(username: string): Promise<string> {
+    if (!username || username.trim().length < 2) {
         throw new Error("Username must be at least 2 characters long.");
     }
 
-    const firstLetter = username.charAt(0).toUpperCase();
-    const lastLetter = username.charAt(username.length - 1).toUpperCase();
+    // Usuwamy białe znaki z początku i końca
+    const trimmedUsername = username.trim();
 
-    // Łączymy litery i zwracamy jako avatar
-    return firstLetter + lastLetter;
+    const firstLetter = trimmedUsername.charAt(0).toUpperCase();
+    const lastLetter = trimmedUsername.charAt(trimmedUsername.length - 1).toUpperCase();
+
+    // Generujemy "awatar"
+    return `${firstLetter}${lastLetter}`;
 }

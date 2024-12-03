@@ -1,21 +1,10 @@
 import prisma from "@/lib/db";
 import { AddNewTaskForm } from "./AddNewTaskForm";
 import { EllipsisVertical } from "lucide-react";
+import { generateAvatar } from "@/actions/users";
 
 interface BacklogPageProps {
     projectId: string; // Poprawnie określony typ przekazanej właściwości
-}
-
-export async function generateAvatar(username: string) {
-    if (username.length < 2) {
-        throw new Error("Username must be at least 2 characters long.");
-    }
-
-    const firstLetter = username.charAt(0).toUpperCase();
-    const lastLetter = username.charAt(username.length - 1).toUpperCase();
-
-    // Łączymy litery i zwracamy jako avatar
-    return firstLetter + lastLetter;
 }
 
 export default async function BacklogPage({ projectId }: BacklogPageProps) {
@@ -72,7 +61,7 @@ export default async function BacklogPage({ projectId }: BacklogPageProps) {
                                                 className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-300 text-gray-700 font-bold"
                                                 title={task.assignee.username}
                                             >
-                                                {generateAvatar(task.assignee.username)}
+                                                <span className="text-gray-600">{generateAvatar(task.assignee.username)}</span>
                                             </div>
                                         ) : (
                                             <div
@@ -86,15 +75,14 @@ export default async function BacklogPage({ projectId }: BacklogPageProps) {
 
                                     {/* Priorytet */}
                                     <span
-                                        className={`text-xs px-2 py-1 rounded-full ${
-                                            task.priority === "HIGH"
-                                                ? "bg-red-100 text-red-600"
-                                                : task.priority === "MEDIUM"
+                                        className={`text-xs px-2 py-1 rounded-full ${task.priority === "HIGH"
+                                            ? "bg-red-100 text-red-600"
+                                            : task.priority === "MEDIUM"
                                                 ? "bg-yellow-100 text-yellow-600"
                                                 : task.priority === "LOW"
-                                                ? "bg-green-100 text-green-600"
-                                                : "bg-gray-100 text-gray-600"
-                                        }`}
+                                                    ? "bg-green-100 text-green-600"
+                                                    : "bg-gray-100 text-gray-600"
+                                            }`}
                                     >
                                         {task.priority}
                                     </span>

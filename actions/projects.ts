@@ -52,3 +52,41 @@ export async function createProject(formData: FormData) {
         }
     }
 }
+
+export async function deleteProject(projectId: string) {
+    try {
+        // Usuwanie projektu z bazy danych
+        await prisma.project.delete({
+            where: { id: projectId },
+        });
+
+        // Odśwież ścieżkę `/projects` po usunięciu projektu
+        revalidatePath("/");
+    } catch (err) {
+        console.error("Failed to delete project:", err);
+        throw new Error("Failed to delete project.");
+    }
+}
+
+export async function updateProject(projectId: string, formData: FormData) {
+    try {
+        const title = formData.get("title") as string;
+        const content = formData.get("content") as string;
+
+        // Aktualizacja projektu w bazie danych
+        await prisma.project.update({
+            where: { id: projectId },
+            data: {
+                title,
+                slug: title.replace(/\s+/g, "-").toLowerCase(),
+                content,
+            },
+        });
+
+        // Odśwież ścieżkę `/projects`
+        revalidatePath("/");
+    } catch (err) {
+        console.error("Failed to update project:", err);
+        throw new Error("Failed to update project.");
+    }
+}
