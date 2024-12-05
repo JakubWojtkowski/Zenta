@@ -16,12 +16,12 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks }) => {
     const [columns, setColumns] = React.useState<{
         // BACKLOG: Task[];
         TODO: Task[];
-        IN_PROGRESS: Task[];
+        PROGRESS: Task[];
         DONE: Task[];
     }>(() => ({
         // BACKLOG: tasks.filter((task) => task.status === "BACKLOG"),
         TODO: tasks.filter((task) => task.status === "TODO"),
-        IN_PROGRESS: tasks.filter((task) => task.status === "IN_PROGRESS"),
+        PROGRESS: tasks.filter((task) => task.status === "IN_PROGRESS"),
         DONE: tasks.filter((task) => task.status === "DONE"),
     }));
 
@@ -79,7 +79,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks }) => {
 
     return (
         <DragDropContext onDragEnd={onDragEnd}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {Object.entries(columns).map(([columnId, columnTasks]) => (
                     <Droppable droppableId={columnId} key={columnId}>
                         {(provided) => (
@@ -102,14 +102,14 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks }) => {
                                                 {...provided.dragHandleProps}
                                                 className="bg-white p-3 mb-3 rounded-md shadow-sm overflow-hidden"
                                             >
-                                                <h3 className="font-semibold text-gray-800 truncate">
+                                                <a href={`/tasks/${task.id}`} className="font-semibold text-gray-800 truncate">
                                                     {truncateText(task.taskName, 10)}
-                                                </h3>
-                                                <p className="text-sm text-gray-600 truncate">
-                                                    {truncateText(task.description || "No description", 20)}
+                                                </a>
+                                                <p className="text-sm text-gray-500 truncate mt-2 mb-4">
+                                                    {truncateText(task.description || "No description", 20).concat("...")}
                                                 </p>
                                                 <span
-                                                    className={`text-xs px-2 py-1 rounded-full ${task.priority === "HIGH"
+                                                    className={`text-xs font-bold px-3 py-1 rounded-full ${task.priority === "HIGH"
                                                         ? "bg-red-200 text-red-800"
                                                         : task.priority === "MEDIUM"
                                                             ? "bg-yellow-200 text-yellow-800"
@@ -118,12 +118,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks }) => {
                                                 >
                                                     {task.priority}
                                                 </span>
-                                                <a
-                                                    href={`/tasks/${task.id}`}
-                                                    className="text-blue-500 text-xs underline mt-2 block"
-                                                >
-                                                    View Task
-                                                </a>
+
                                             </div>
                                         )}
                                     </Draggable>

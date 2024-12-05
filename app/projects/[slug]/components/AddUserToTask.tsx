@@ -33,13 +33,13 @@ export default function AddUserToTask({ taskId, projectId }: AddUserToTaskProps)
     };
 
     const handleAddUser = async (userId: string) => {
-        console.log("taskId:", taskId); // Dodaj logowanie, aby sprawdzić, czy taskId jest przekazywane
+        console.log("taskId:", taskId); // Sprawdzamy, czy taskId jest przekazywane
 
         try {
             const formData = new FormData();
             formData.set("taskId", taskId); // Upewnij się, że taskId jest prawidłowo ustawione
             formData.set("userId", userId);
-            await addUserToTask(formData);
+            await addUserToTask(formData, projectId); // Przekazujemy projectId
             alert("User successfully assigned to the task!");
             setIsOpen(false);
         } catch (err: unknown) {
@@ -52,6 +52,7 @@ export default function AddUserToTask({ taskId, projectId }: AddUserToTaskProps)
     };
 
 
+
     const openModal = () => {
         fetchAvailableUsers();
         setIsOpen(true);
@@ -60,7 +61,7 @@ export default function AddUserToTask({ taskId, projectId }: AddUserToTaskProps)
     return (
         <>
             <button
-                className="w-8 h-8 text-xl rounded-full flex items-center justify-center bg-orange-100 text-orange-500 font-bold"
+                className="w-8 h-8 ml-1 text-xl rounded-full flex items-center justify-center bg-orange-100 text-orange-500 font-bold"
                 onClick={openModal}
             >
                 +

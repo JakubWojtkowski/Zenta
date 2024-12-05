@@ -89,7 +89,7 @@ export default async function BacklogPage({ projectId }: BacklogPageProps) {
 
                                     {/* Priorytet */}
                                     <span
-                                        className={`text-xs px-2 py-1 rounded-full ${task.priority === "HIGH"
+                                        className={`text-xs font-bold px-3 py-1 rounded-full ${task.priority === "HIGH"
                                             ? "bg-red-100 text-red-600"
                                             : task.priority === "MEDIUM"
                                                 ? "bg-yellow-100 text-yellow-600"
