@@ -2,11 +2,13 @@ import prisma from "@/lib/db";
 import { HouseIcon, SlashIcon, SearchIcon } from "lucide-react";
 import BacklogPage from "./components/Backlog";
 import { generateAvatar } from "@/actions/users";
+import AddSprintForm from "./components/AddSprintForm";
+import Link from "next/link"; // Zaimportowanie Linka
 
 export default async function ProjectPage({ params }: { params: { slug: string } }) {
     const { slug } = params;
 
-    // Pobranie projektu oraz zadań
+    // Pobranie projektu, sprintów i zadań
     const project = await prisma.project.findUnique({
         where: { slug: slug },
         include: {
@@ -20,6 +22,7 @@ export default async function ProjectPage({ params }: { params: { slug: string }
                     assignee: true,
                 },
             },
+            sprints: true, // Pobranie sprintów przypisanych do projektu
         },
     });
 
@@ -77,17 +80,17 @@ export default async function ProjectPage({ params }: { params: { slug: string }
                             <SearchIcon className="absolute left-2 top-2.5 text-gray-500 w-5 h-5" />
                         </div>
 
+                        <AddSprintForm
+                            projectId={project.id}
+                            backlogTasks={project.tasks}
+                        />
+
                         {/* Avatary użytkowników */}
                         <div className="flex -space-x-2">
                             {project.members.map((member) => (
-                                <>
-                                    <div
-                                        className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-300 text-gray-700 font-bold"
-                                    >
-                                        <span className="text-gray-600">{generateAvatar(member.user.username)}</span>
-                                    </div>
-
-                                </>
+                                <div key={member.user.id} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-300 text-gray-700 font-bold">
+                                    <span className="text-gray-600">{generateAvatar(member.user.username)}</span>
+                                </div>
                             ))}
                         </div>
 
@@ -101,7 +104,24 @@ export default async function ProjectPage({ params }: { params: { slug: string }
                     </div>
                 </div>
 
-                {/* Przekazanie projectId */}
+                {/* Sekcja Sprintów */}
+                <div>
+                    <h3 className="text-2xl font-semibold text-gray-800">Sprints</h3>
+                    <ul className="mt-4 space-y-2">
+                        {project.sprints.map((sprint) => (
+                            <li key={sprint.id}>
+                                <Link
+                                    href={`/sprint/${sprint.id}`}
+                                    className="text-blue-600 hover:underline"
+                                >
+                                    {sprint.name}
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+
+                {/* Przekazanie projectId do BacklogPage */}
                 <BacklogPage projectId={project.id} />
             </div>
         </div>

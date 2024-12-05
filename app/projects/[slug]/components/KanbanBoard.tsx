@@ -4,7 +4,6 @@ import React from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import { updateTask } from "@/actions/tasks";
 import { Task } from "@/types/types";
-import { PlusIcon } from "lucide-react";
 
 interface KanbanBoardProps {
     tasks: Task[];
@@ -92,9 +91,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks }) => {
                                 <h2 className="font-bold mb-4 text-gray-400 flex items-center gap-2">
                                     {columnId}
                                 </h2>
-                                <div className="text-gray-600">
-                                    <PlusIcon />
-                                </div>
+
 
                                 {columnTasks.map((task, index) => (
                                     <Draggable draggableId={task.id.toString()} index={index} key={task.id.toString()}>

@@ -4,6 +4,48 @@ import prisma from "@/lib/db";
 import { Prisma } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { User } from "@prisma/client";
+import { revalidatePath } from "next/cache";
+
+export async function addUserToTask(formData: FormData, projectId: string) {
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user?.email) {
+        throw new Error("You must be logged in to assign users to tasks.");
+    }
+
+    const taskId = formData.get("taskId") as string;
+    const userId = formData.get("userId") as string;
+
+    console.log("Received taskId:", taskId); // Sprawdzamy, czy taskId jest poprawnie odczytane
+
+    if (!taskId || !userId) {
+        throw new Error("Task ID or User ID is missing.");
+    }
+
+    try {
+        await prisma.task.update({
+            where: { id: taskId },
+            data: {
+                assignee: {
+                    connect: { id: userId },
+                },
+            },
+        });
+
+        // Odświeżenie ścieżki projektu
+        revalidatePath(`/projects/${projectId}`);
+    } catch (err) {
+        if (err instanceof Prisma.PrismaClientKnownRequestError) {
+            console.error(err);
+            throw new Error("Failed to assign user to task.");
+        } else {
+            console.error(err);
+            throw err;
+        }
+    }
+}
+
 
 export async function addMemberToProject(formData: FormData) {
     // Pobierz sesję użytkownika
@@ -51,4 +93,23 @@ export async function generateAvatar(username: string): Promise<string> {
 
     // Generujemy "awatar"
     return `${firstLetter}${lastLetter}`;
+}
+
+export async function getAvailableUsers(projectId: string): Promise<User[]> {
+    const project = await prisma.project.findUnique({
+        where: { id: projectId },
+        include: { members: true },
+    });
+
+    if (!project) {
+        throw new Error("Project not found.");
+    }
+
+    const memberIds = project.members.map((member) => member.userId);
+
+    const availableUsers = await prisma.user.findMany({
+        where: { id: { in: memberIds } }, // Pobieramy użytkowników będących członkami projektu
+    });
+
+    return availableUsers;
 }

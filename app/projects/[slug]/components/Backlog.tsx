@@ -2,6 +2,8 @@ import prisma from "@/lib/db";
 import { AddNewTaskForm } from "./AddNewTaskForm";
 import { EllipsisVertical } from "lucide-react";
 import { generateAvatar } from "@/actions/users";
+import AddUserToTask from "./AddUserToTask";
+
 
 interface BacklogPageProps {
     projectId: string; // Poprawnie określony typ przekazanej właściwości
@@ -15,11 +17,17 @@ export default async function BacklogPage({ projectId }: BacklogPageProps) {
             tasks: {
                 where: { sprintId: null }, // Zadania bez przypisanego sprintu
                 include: {
-                    assignee: true, // Zakładamy, że pole `assignee` zawiera użytkownika
+                    assignee: true, // Pobieranie przypisanego użytkownika do zadania
+                },
+            },
+            members: {
+                include: {
+                    user: true, // Pobieranie danych użytkowników związanych z członkami projektu
                 },
             },
         },
     });
+
 
     // Obsługa przypadku, gdy projekt nie istnieje
     if (!project) {
@@ -70,6 +78,12 @@ export default async function BacklogPage({ projectId }: BacklogPageProps) {
                                             >
                                                 --
                                             </div>
+                                        )}
+                                        {project?.members && (
+                                            <>
+                                                <AddUserToTask taskId={task.id.toString()} projectId={project.id.toString()} />
+                                            </>
+
                                         )}
                                     </div>
 

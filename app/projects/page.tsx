@@ -77,11 +77,7 @@ export default async function ProjectsPage() {
                                     ))}
                                     {project?.members && (
                                         <>
-                                            <AddUserToProject
-                                                projectId={project.id.toString()}
-                                                initialTitle={project.title ?? ""}
-                                                initialContent={project.content ?? ""}
-                                            />
+                                            <AddUserToProject projectId={project.id.toString()} />
                                         </>
 
                                     )}

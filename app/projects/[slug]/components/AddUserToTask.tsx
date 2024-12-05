@@ -2,23 +2,24 @@
 
 import { useState } from "react";
 import { Dialog } from "@headlessui/react";
-import { User } from "@prisma/client"; // Importujemy typ użytkownika z Prisma
-import { addMemberToProject, getAvailableUsers } from "@/actions/users";
+import { User } from "@prisma/client";
+import { addUserToTask, getAvailableUsers } from "@/actions/users";
 
-interface AddUserToProjectProps {
+interface AddUserToTaskProps {
+    taskId: string;
     projectId: string;
 }
 
-export default function AddUserToProject({ projectId }: AddUserToProjectProps) {
+export default function AddUserToTask({ taskId, projectId }: AddUserToTaskProps) {
     const [isOpen, setIsOpen] = useState(false);
-    const [users, setUsers] = useState<User[]>([]); // Typujemy tablicę użytkowników jako User[]
+    const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string>(""); // Typ błędu jako string
+    const [error, setError] = useState<string>("");
 
     const fetchAvailableUsers = async () => {
         setLoading(true);
         try {
-            const availableUsers: User[] = await getAvailableUsers(projectId); // Zmienna typu User[]
+            const availableUsers: User[] = await getAvailableUsers(projectId);
             setUsers(availableUsers);
         } catch (err: unknown) {
             if (err instanceof Error) {
@@ -32,21 +33,24 @@ export default function AddUserToProject({ projectId }: AddUserToProjectProps) {
     };
 
     const handleAddUser = async (userId: string) => {
+        console.log("taskId:", taskId); // Dodaj logowanie, aby sprawdzić, czy taskId jest przekazywane
+
         try {
             const formData = new FormData();
-            formData.set("projectId", projectId);
+            formData.set("taskId", taskId); // Upewnij się, że taskId jest prawidłowo ustawione
             formData.set("userId", userId);
-            await addMemberToProject(formData);
-            alert("User added successfully!");
+            await addUserToTask(formData);
+            alert("User successfully assigned to the task!");
             setIsOpen(false);
         } catch (err: unknown) {
             if (err instanceof Error) {
-                alert(`Failed to add user: ${err.message}`);
+                alert(`Failed to add user to task: ${err.message}`);
             } else {
-                alert("Failed to add user: Unknown error.");
+                alert("Failed to add user to task: Unknown error.");
             }
         }
     };
+
 
     const openModal = () => {
         fetchAvailableUsers();
@@ -63,11 +67,10 @@ export default function AddUserToProject({ projectId }: AddUserToProjectProps) {
             </button>
 
             <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="fixed inset-0 z-50 flex items-center justify-center">
-                {/* <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" /> */}
                 <div className="bg-white p-6 rounded-lg shadow-md max-w-md w-full">
-                    <Dialog.Title className="text-xl font-bold mb-4">Add User to Project</Dialog.Title>
+                    <Dialog.Title className="text-xl font-bold mb-4">Add User to Task</Dialog.Title>
                     <Dialog.Description>
-                        Select a user to add to this project.
+                        Select a user to assign to this task.
                     </Dialog.Description>
 
                     {loading ? (
@@ -75,7 +78,7 @@ export default function AddUserToProject({ projectId }: AddUserToProjectProps) {
                     ) : error ? (
                         <p className="text-red-500">{error}</p>
                     ) : users.length === 0 ? (
-                        <p>No users available to add.</p>
+                        <p>No users available to assign.</p>
                     ) : (
                         <ul className="mt-4 space-y-2">
                             {users.map((user) => (
@@ -85,7 +88,7 @@ export default function AddUserToProject({ projectId }: AddUserToProjectProps) {
                                         className="text-sm text-blue-500 hover:underline"
                                         onClick={() => handleAddUser(user.id)}
                                     >
-                                        Add
+                                        Assign
                                     </button>
                                 </li>
                             ))}

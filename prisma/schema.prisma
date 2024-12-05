@@ -11,26 +11,26 @@ model User {
   id        String   @id @default(cuid()) // Główny klucz
   username  String   @unique
   email     String   @unique
-  password  String   // Zaszyfrowane hasło
-  role      String   // Rola użytkownika (admin, user, manager, etc.)
-  avatar    String?  // Opcjonalny link do avatara
+  password  String // Zaszyfrowane hasło
+  role      String // Rola użytkownika (admin, user, manager, etc.)
+  avatar    String? // Opcjonalny link do avatara
   createdAt DateTime @default(now()) // Data utworzenia konta
 
   projects      Project[] // Jeden użytkownik może stworzyć wiele projektów
-  tasks         Task[]    // Jeden użytkownik może mieć wiele zadań
+  tasks         Task[] // Jeden użytkownik może mieć wiele zadań
   TimeLog       TimeLog[] // Logi czasu pracy
   UserRole      UserRole[] // Rola użytkownika w systemie
   ProjectMember ProjectMember[] // Relacja wiele do wielu z projektami (członkostwo w projektach)
 }
 
 model Project {
-  id        String   @id @default(cuid()) // Główny klucz
-  title     String   // Tytuł projektu
-  content   String?  // Opis projektu
-  slug      String   @unique // Unikalny identyfikator URL
-  completed Boolean  @default(false) // Czy projekt został ukończony
-  createdAt DateTime @default(now()) @map("created_at") // Data utworzenia projektu
-  updatedAt DateTime @updatedAt // Automatyczna aktualizacja daty modyfikacji
+  id        String    @id @default(cuid()) // Główny klucz
+  title     String // Tytuł projektu
+  content   String? // Opis projektu
+  slug      String    @unique // Unikalny identyfikator URL
+  completed Boolean   @default(false) // Czy projekt został ukończony
+  createdAt DateTime  @default(now()) @map("created_at") // Data utworzenia projektu
+  updatedAt DateTime  @updatedAt // Automatyczna aktualizacja daty modyfikacji
   endDate   DateTime? // Data zakończenia projektu
 
   author   User   @relation(fields: [authorId], references: [id]) // Autor projektu
@@ -54,10 +54,10 @@ model ProjectMember {
 
 model Task {
   id          String    @id @default(cuid()) // Główny klucz
-  taskName    String    // Nazwa zadania
-  description String?   // Opcjonalny opis zadania
-  status      Status    // Status zadania (TODO, IN_PROGRESS, DONE)
-  priority    Priority  // Priorytet zadania (LOW, MEDIUM, HIGH, URGENT)
+  taskName    String // Nazwa zadania
+  description String? // Opcjonalny opis zadania
+  status      Status // Status zadania (TODO, IN_PROGRESS, DONE)
+  priority    Priority // Priorytet zadania (LOW, MEDIUM, HIGH, URGENT)
   deadline    DateTime? // Opcjonalna data zakończenia
 
   createdAt DateTime @default(now()) // Data utworzenia zadania
@@ -66,8 +66,8 @@ model Task {
   projectId       String // Klucz obcy do Project (id projektu)
   sprintId        String? // Klucz obcy do Sprint (id sprintu)
   assignedTo      String? // Klucz obcy do User (id użytkownika), przypisany użytkownik
-  estimatedPoints Int?    // Szacowane punkty trudności
-  timeEstimate    Int?    // Szacowany czas w minutach
+  estimatedPoints Int? // Szacowane punkty trudności
+  timeEstimate    Int? // Szacowany czas w minutach
 
   project  Project   @relation(fields: [projectId], references: [id]) // Relacja do projektu
   sprint   Sprint?   @relation(fields: [sprintId], references: [id]) // Relacja do sprintu
@@ -76,22 +76,23 @@ model Task {
 }
 
 model Sprint {
-  id         String   @id @default(cuid()) // Główny klucz
-  name       String   // Nazwa sprintu
-  startDate  DateTime // Data rozpoczęcia sprintu
-  endDate    DateTime // Data zakończenia sprintu
-  projectId  String   // Klucz obcy do projektu
+  id          String   @id @default(cuid()) // Główny klucz
+  name        String // Nazwa sprintu
+  startDate   DateTime // Data rozpoczęcia sprintu
+  endDate     DateTime // Data zakończenia sprintu
+  projectId   String // Klucz obcy do projektu
+  isCompleted Boolean  @default(false) // Nowe pole
 
   project Project @relation(fields: [projectId], references: [id]) // Relacja do projektu
-  tasks   Task[]  // Zadania przypisane do sprintu
+  tasks   Task[] // Zadania przypisane do sprintu
 }
 
 model TimeLog {
   id        Int      @id @default(autoincrement()) // Główny klucz
-  duration  Int      // Czas pracy (w minutach)
-  taskId    String   // Klucz obcy do zadania
+  duration  Int // Czas pracy (w minutach)
+  taskId    String // Klucz obcy do zadania
   task      Task     @relation(fields: [taskId], references: [id]) // Relacja do zadania
-  userId    String   // Klucz obcy do użytkownika
+  userId    String // Klucz obcy do użytkownika
   user      User     @relation(fields: [userId], references: [id]) // Relacja do użytkownika
   createdAt DateTime @default(now()) // Data logu czasu
 }
@@ -104,7 +105,7 @@ model Role {
 
 model UserRole {
   userId String // Klucz obcy do użytkownika
-  roleId Int    // Klucz obcy do roli
+  roleId Int // Klucz obcy do roli
   user   User   @relation(fields: [userId], references: [id]) // Relacja do użytkownika
   role   Role   @relation(fields: [roleId], references: [id]) // Relacja do roli
 
@@ -112,10 +113,10 @@ model UserRole {
 }
 
 enum Status {
-  TODO          // Zadanie do wykonania
-  IN_PROGRESS   // Zadanie w trakcie realizacji
-  DONE          // Zadanie zakończone
-  BACKLOG       // Zadanie w backlogu
+  TODO // Zadanie do wykonania
+  IN_PROGRESS // Zadanie w trakcie realizacji
+  DONE // Zadanie zakończone
+  BACKLOG // Zadanie w backlogu
 }
 
 enum Priority {
