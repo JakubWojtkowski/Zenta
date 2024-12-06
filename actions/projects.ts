@@ -55,15 +55,27 @@ export async function createProject(formData: FormData) {
 
 export async function deleteProject(projectId: string) {
     try {
-        // Usuwanie projektu z bazy danych
+        console.log("Deleting project with ID:", projectId);
+
+        // Sprawdzenie, czy projekt istnieje
+        const project = await prisma.project.findUnique({ where: { id: projectId } });
+        if (!project) {
+            throw new Error("Project not found");
+        }
+
+        // Usuwanie projektu
         await prisma.project.delete({
             where: { id: projectId },
         });
 
-        // Odśwież ścieżkę `/projects` po usunięciu projektu
-        revalidatePath("/");
+        // Odświeżanie ścieżki
+        revalidatePath("/projects"); // Zmień ścieżkę, jeśli projekty są w innym miejscu
     } catch (err) {
-        console.error("Failed to delete project:", err);
+        if (err instanceof Prisma.PrismaClientKnownRequestError) {
+            console.error("Prisma error:", err.message);
+        } else {
+            console.error("Unexpected error:", err);
+        }
         throw new Error("Failed to delete project.");
     }
 }

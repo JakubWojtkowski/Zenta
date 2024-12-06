@@ -6,6 +6,7 @@ import { generateAvatar } from "@/actions/users";
 import AddNewProject from "./components/AddNewProject";
 import EditProject from "./components/EditProject"; // Zmieniamy nazwę na EditProjectModal
 import AddUserToProject from "./components/AddUserToProject";
+import DeleteProjectModal from "./components/DeleteProjectModal";
 
 export default async function ProjectsPage() {
     const session = await getServerSession(authOptions);
@@ -89,12 +90,8 @@ export default async function ProjectsPage() {
                                     initialTitle={project.title ?? ""}
                                     initialContent={project.content ?? ""}
                                 />
-                                <Link
-                                    href={`/projects/delete/${project.id}`}
-                                    className="text-sm text-red-400 bg-red-50 p-2 rounded-md"
-                                >
-                                    Delete
-                                </Link>
+                                <DeleteProjectModal projectId={project.id} projectName={project.name} />
+
                             </td>
                         </tr>
                     ))}
