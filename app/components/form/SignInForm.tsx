@@ -30,7 +30,7 @@ const FormSchema = z.object({
 
 const SignInForm = () => {
     const router = useRouter();
-    const { toast } = useToast()
+    const { toast } = useToast();
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {

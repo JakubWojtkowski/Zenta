@@ -71,6 +71,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks }) => {
             formData.append("status", destination.droppableId);
             formData.append("taskName", draggedTask.taskName);
             formData.append("priority", draggedTask.priority);
+            formData.append("estimatedPoints", draggedTask.estimatedPoints.toString());
             await updateTask(formData);
         } catch (error) {
             console.error("Error updating task:", error);
@@ -108,17 +109,23 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks }) => {
                                                 <p className="text-sm text-gray-500 truncate mt-2 mb-4">
                                                     {truncateText(task.description || "No description", 20).concat("...")}
                                                 </p>
-                                                <span
-                                                    className={`text-xs font-bold px-3 py-1 rounded-full ${task.priority === "HIGH"
-                                                        ? "bg-red-200 text-red-800"
-                                                        : task.priority === "MEDIUM"
-                                                            ? "bg-yellow-200 text-yellow-800"
-                                                            : "bg-green-200 text-green-800"
-                                                        }`}
-                                                >
-                                                    {task.priority}
-                                                </span>
-
+                                                <div className="flex justify-between">
+                                                    <span
+                                                        className={`text-xs font-bold px-6 py-1 rounded-full ${task.priority === "HIGH"
+                                                            ? "bg-red-200 text-red-800"
+                                                            : task.priority === "MEDIUM"
+                                                                ? "bg-yellow-200 text-yellow-800"
+                                                                : "bg-green-200 text-green-800"
+                                                            }`}
+                                                    >
+                                                        {task.priority}
+                                                    </span>
+                                                    <span
+                                                        className="rounded-full font-bold  bg-gray-300 px-2"
+                                                    >
+                                                        {task.estimatedPoints}
+                                                    </span>
+                                                </div>
                                             </div>
                                         )}
                                     </Draggable>

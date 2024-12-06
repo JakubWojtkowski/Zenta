@@ -13,7 +13,20 @@ interface CreateSprintInput {
 
 export async function createSprint(data: CreateSprintInput) {
     console.log(data);
+
     try {
+        // Sprawdzenie, czy istnieją zadania w backlogu
+        const tasksInBacklog = await prisma.task.count({
+            where: {
+                projectId: data.projectId,
+                sprintId: null, // Zadania bez przypisanego sprintu
+            },
+        });
+
+        if (tasksInBacklog === 0) {
+            throw new Error("Nie można utworzyć sprintu, ponieważ backlog jest pusty.");
+        }
+
         // Tworzenie nowego sprintu
         const sprint = await prisma.sprint.create({
             data: {

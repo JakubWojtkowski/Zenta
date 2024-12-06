@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { createSprint } from "@/actions/sprints"; // Ścieżka do nowej akcji
 import { Task } from "@prisma/client";
+import { useToast } from "@/hooks/use-toast"
 
 interface AddSprintFormProps {
     projectId: string;
@@ -17,6 +18,8 @@ export default function AddSprintForm({ projectId, backlogTasks }: AddSprintForm
     const [endDate, setEndDate] = useState("");
     const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
 
+    const { toast } = useToast()
+
     const toggleTaskSelection = (taskId: string) => {
         setSelectedTasks((prev) =>
             prev.includes(taskId) ? prev.filter((id) => id !== taskId) : [...prev, taskId]
@@ -24,17 +27,31 @@ export default function AddSprintForm({ projectId, backlogTasks }: AddSprintForm
     };
 
     const handleSubmit = async () => {
-        await createSprint({
-            name,
-            startDate: new Date(startDate),
-            endDate: new Date(endDate),
-            projectId,
-            taskIds: selectedTasks,
-        });
+        try {
+            await createSprint({
+                name,
+                startDate: new Date(startDate),
+                endDate: new Date(endDate),
+                projectId,
+                taskIds: selectedTasks,
+            });
 
-        alert("Sprint created successfully!");
-        setIsOpen(false); // Zamknięcie modala
+            toast({
+                title: "Success",
+                description: "Sprint created successfully!",
+                variant: "default",
+            });
+        } catch (error) {
+            console.error("Error creating sprint:", error);
 
+            toast({
+                title: "Error",
+                description: "Oops! Something went wrong!",
+                variant: "destructive",
+            });
+        } finally {
+            setIsOpen(false); // Close the modal
+        }
     };
 
     return (
