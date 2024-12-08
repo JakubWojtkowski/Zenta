@@ -30,7 +30,7 @@ export default async function BacklogPage({ projectId }: BacklogPageProps) {
     }
 
     return (
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 min-h-[50vh] mb-16">
             <h2 className="text-xl font-semibold mb-4">
                 Backlog <span className="text-lg text-gray-400">({project.tasks.length} tasks)</span>
             </h2>
@@ -72,13 +72,13 @@ export default async function BacklogPage({ projectId }: BacklogPageProps) {
                                         )}
                                     </div>
                                     <span
-                                        className={`text-xs font-bold px-3 py-1 rounded-full ${task.priority === "HIGH"
+                                        className={`text-xs font-bold w-[70px] flex items-center justify-center py-1 rounded-full ${task.priority === "HIGH"
                                             ? "bg-red-100 text-red-600"
                                             : task.priority === "MEDIUM"
-                                            ? "bg-yellow-100 text-yellow-600"
-                                            : task.priority === "LOW"
-                                            ? "bg-green-100 text-green-600"
-                                            : "bg-gray-100 text-gray-600"
+                                                ? "bg-yellow-100 text-yellow-600"
+                                                : task.priority === "LOW"
+                                                    ? "bg-green-100 text-green-600"
+                                                    : "bg-gray-100 text-gray-600"
                                             }`}
                                     >
                                         {task.priority}

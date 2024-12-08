@@ -9,7 +9,7 @@ const Navbar = async () => {
     const session = await getServerSession(authOptions);
 
     return (
-        <div className="py-4 w-full px-6 md:px-10 border-b-2 border-gray-600 bg-gray-800 text-white">
+        <div className="py-4 w-full px-6 md:px-10 border-b-4 border-gray-200 bg-gray-100">
             <div className="container flex items-center justify-between">
 
                 <Link href="/" aria-label="Go to Home" className="flex items-center text-lg font-bold ">

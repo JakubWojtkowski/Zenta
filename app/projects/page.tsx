@@ -64,7 +64,7 @@ export default async function ProjectsPage() {
                                 </Link>
                             </td>
                             <td className="px-6 py-4 flex">
-                                <div className="border border-green-300 rounded p-1 bg-green-100 text-green-400 ">{project.author?.username || "Unknown"}</div>
+                                <div className="border-2 border-green-300 rounded p-1 bg-green-100 text-green-500 ">{project.author?.username || "Unknown"}</div>
                             </td>
                             <td className="px-6 py-4">
                                 <div className="flex gap-1">

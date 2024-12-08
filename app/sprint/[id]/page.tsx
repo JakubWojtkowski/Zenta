@@ -23,7 +23,7 @@ export default async function SprintPage({ params }: { params: { id: string } })
     const { name, startDate, endDate, tasks, project } = sprint;
 
     return (
-        <div className="container mx-auto px-4 sm:px-20 sm:py-10">
+        <div className="container mx-auto px-4 sm:px-20 sm:py-10 min-h-[100vh]">
             {/* Nagłówek nawigacyjny */}
             <div className="text-center mb-12 flex gap-1 text-gray-400 font-bold text-sm tracking-wide">
                 <a href={`/projects/${project.id}`} className="hover:text-gray-600">

@@ -19,7 +19,7 @@ export const AddNewTaskForm = ({ project }: AddNewTaskFormProps) => {
             {/* Przycisk otwierający modal */}
             <button
                 onClick={toggleSidebar}
-                className="text-gray-400 text-sm font-semibold px-4 rounded-md transition flex gap-2 hover:text-gray-500"
+                className="text-blue-400 text-sm font-semibold px-4 rounded-md transition flex gap-2 hover:text-blue-500"
             >
                 <PlusIcon size={18} /> New
             </button>
