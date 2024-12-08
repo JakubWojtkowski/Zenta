@@ -36,7 +36,7 @@ export default function DeleteProjectModal({ projectId, projectName }: DeletePro
         <>
             <button
                 onClick={() => setIsOpen(true)}
-                className="text-sm text-red-500 bg-red-50 p-2 rounded-md hover:bg-red-100"
+                className="text-sm text-red-500 bg-red-50 p-2 rounded-md hover:bg-red-100 flex-1"
             >
                 Delete
             </button>
@@ -48,9 +48,9 @@ export default function DeleteProjectModal({ projectId, projectName }: DeletePro
             >
                 <div className="bg-white p-6 rounded-lg shadow-md max-w-sm w-full">
                     <Dialog.Title className="text-lg font-semibold mb-4">
-                        Are you sure you want to delete this project?
+                        Are you sure you want to delete?
                     </Dialog.Title>
-                    <Dialog.Description className="text-gray-600 mb-6">
+                    <Dialog.Description className="text-gray-600 mb-6 text-sm">
                         This action cannot be undone. {projectName && `The project "${projectName}" will be permanently deleted.`}
                     </Dialog.Description>
 
@@ -59,14 +59,14 @@ export default function DeleteProjectModal({ projectId, projectName }: DeletePro
                     <div className="flex justify-end space-x-4">
                         <button
                             onClick={() => setIsOpen(false)}
-                            className="px-4 py-2 text-sm text-gray-500 border border-gray-300 rounded-md hover:bg-gray-100"
+                            className="px-4 py-2 text-sm text-gray-500 border border-gray-300 rounded-md hover:bg-gray-100 flex-1"
                             disabled={loading}
                         >
                             No
                         </button>
                         <button
                             onClick={handleDelete}
-                            className="px-4 py-2 text-sm text-white bg-red-500 rounded-md hover:bg-red-600"
+                            className="px-4 py-2 text-sm text-white bg-red-500 rounded-md hover:bg-red-600 flex-1"
                             disabled={loading}
                         >
                             {loading ? "Deleting..." : "Delete"}

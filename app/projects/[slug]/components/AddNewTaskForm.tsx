@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Project } from "@prisma/client";
 import { createTask } from "@/actions/tasks";
+import { PlusIcon } from "lucide-react";
 
 interface AddNewTaskFormProps {
     project: Project & { members?: { user: { id: string; username: string } }[] };
@@ -18,9 +19,9 @@ export const AddNewTaskForm = ({ project }: AddNewTaskFormProps) => {
             {/* Przycisk otwierający modal */}
             <button
                 onClick={toggleSidebar}
-                className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
+                className="text-gray-400 text-sm font-semibold px-4 rounded-md transition flex gap-2 hover:text-gray-500"
             >
-                Add New Task
+                <PlusIcon size={18} /> New
             </button>
 
             {/* Modal sidebar */}
@@ -33,7 +34,7 @@ export const AddNewTaskForm = ({ project }: AddNewTaskFormProps) => {
                     ></div>
 
                     {/* Zawartość sidebaru */}
-                    <div className="w-1/4 bg-white shadow-lg p-6 overflow-y-auto">
+                    <div className="w-1/3 bg-white shadow-lg p-6 overflow-y-auto">
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-2xl font-semibold text-gray-800">Add New Task</h3>
                             <button
@@ -76,7 +77,7 @@ export const AddNewTaskForm = ({ project }: AddNewTaskFormProps) => {
                                     name="description"
                                     placeholder="Enter task description"
                                     rows={4}
-                                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 resize-none"
                                     required
                                     minLength={10}
                                 ></textarea>
@@ -122,8 +123,8 @@ export const AddNewTaskForm = ({ project }: AddNewTaskFormProps) => {
                                                 {member.user.username}
                                             </option>
                                         )) || (
-                                            <option value="">No members available</option>
-                                        )}
+                                                <option value="">No members available</option>
+                                            )}
                                     </select>
                                 </div>
                             </div>

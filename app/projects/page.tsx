@@ -67,7 +67,7 @@ export default async function ProjectsPage() {
                                 <div className="border border-green-300 rounded p-1 bg-green-100 text-green-400 ">{project.author?.username || "Unknown"}</div>
                             </td>
                             <td className="px-6 py-4">
-                                <div className="flex gap-2">
+                                <div className="flex gap-1">
                                     {project?.members.slice(0, 3).map((member) => (
                                         <div
                                             key={member.user.id}
@@ -90,7 +90,7 @@ export default async function ProjectsPage() {
                                     initialTitle={project.title ?? ""}
                                     initialContent={project.content ?? ""}
                                 />
-                                <DeleteProjectModal projectId={project.id} projectName={project.name} />
+                                <DeleteProjectModal projectId={project.id} projectName={project.title} />
 
                             </td>
                         </tr>
@@ -99,7 +99,7 @@ export default async function ProjectsPage() {
             </table>
 
             {/* Add New Project Button */}
-            <AddNewProject />
+            <AddNewProject username={user.username} />
         </div>
     );
 }

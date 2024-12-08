@@ -1,6 +1,7 @@
 import prisma from "@/lib/db";
 import KanbanBoard from "../../projects/[slug]/components/KanbanBoard"; // Zakładam, że masz taki komponent
 import { notFound } from "next/navigation";
+import EndSprintButton from "./components/EndSprintButton";
 
 export default async function SprintPage({ params }: { params: { id: string } }) {
     const { id } = params;
@@ -36,7 +37,7 @@ export default async function SprintPage({ params }: { params: { id: string } })
             <div className="flex flex-col gap-6">
                 <div className="flex justify-between items-center">
                     <h2 className="text-3xl font-semibold text-gray-800">Sprint: {name}</h2>
-                    {/* Przycisk do zakończenia sprintu */}
+                    <EndSprintButton />
                 </div>
 
                 <div className="text-gray-400">

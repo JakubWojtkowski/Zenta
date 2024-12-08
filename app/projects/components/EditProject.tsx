@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as Label from "@radix-ui/react-label";
 import { X } from "lucide-react";
-import { updateProject } from "@/actions/projects";  // Upewnij się, że masz funkcję do aktualizacji projektu
+import { updateProject } from "@/actions/projects"; // Funkcja do aktualizacji projektu
 
 type EditProjectProps = {
     projectId: string;
@@ -40,7 +40,7 @@ export default function EditProject({ projectId, initialTitle, initialContent }:
             {/* Button to open the modal */}
             <button
                 onClick={() => setIsOpen(true)}
-                className="text-sm text-blue-400 bg-blue-50 p-2 rounded-md"
+                className="text-sm text-blue-400 bg-blue-50 p-2 rounded-md flex-1"
             >
                 Edit
             </button>
@@ -55,7 +55,7 @@ export default function EditProject({ projectId, initialTitle, initialContent }:
                     ></div>
 
                     {/* Modal Sidebar */}
-                    <div className="relative bg-white shadow-xl w-[25%] max-w-sm h-full p-6 flex flex-col">
+                    <div className="relative bg-white shadow-xl w-1/3 h-full p-6 flex flex-col ml-auto">
                         {/* Close button */}
                         <button
                             onClick={() => setIsOpen(false)}
@@ -65,7 +65,7 @@ export default function EditProject({ projectId, initialTitle, initialContent }:
                         </button>
 
                         <h2 className="text-2xl font-bold mb-6 text-gray-700">
-                            {initialTitle}.
+                            Edit Project
                         </h2>
 
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -73,7 +73,7 @@ export default function EditProject({ projectId, initialTitle, initialContent }:
                             <div className="relative">
                                 <Label.Root
                                     htmlFor="title"
-                                    className="absolute left-2 top-2 text-gray-600 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base"
+                                    className="absolute left-4 top-2 text-gray-600 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base"
                                 >
                                     Title
                                 </Label.Root>
@@ -90,7 +90,7 @@ export default function EditProject({ projectId, initialTitle, initialContent }:
                             <div className="relative">
                                 <Label.Root
                                     htmlFor="content"
-                                    className="absolute left-2 top-2 text-gray-600 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base"
+                                    className="absolute left-4 top-2 text-gray-600 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base"
                                 >
                                     Description
                                 </Label.Root>
