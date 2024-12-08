@@ -2,6 +2,7 @@ import prisma from "@/lib/db";
 import KanbanBoard from "../../projects/[slug]/components/KanbanBoard"; // Zakładam, że masz taki komponent
 import { notFound } from "next/navigation";
 import EndSprintButton from "./components/EndSprintButton";
+import PointsByStatusChart from "./components/PointsByStatusChart";
 
 export default async function SprintPage({ params }: { params: { id: string } }) {
     const { id } = params;
@@ -11,7 +12,11 @@ export default async function SprintPage({ params }: { params: { id: string } })
         where: { id },
         include: {
             tasks: true, // Pobranie zadań przypisanych do sprintu
-            project: true, // Pobranie danych projektu dla poprawnego wyświetlenia
+            project: {
+                include: {
+                    tasks: true, // Pobranie zadań powiązanych z projektem
+                },
+            },
         },
     });
 
@@ -30,7 +35,7 @@ export default async function SprintPage({ params }: { params: { id: string } })
                     {project.title}
                 </a>
                 <span>/</span>
-                <span>Sprint: {name}</span>
+                <span>{name}</span>
             </div>
 
             {/* Sekcja szczegółów sprintu */}
@@ -55,6 +60,9 @@ export default async function SprintPage({ params }: { params: { id: string } })
 
                 {/* Tablica Kanban z zadaniami sprintu */}
                 <KanbanBoard tasks={tasks} />
+                
+                {/* wykresy */}
+                <PointsByStatusChart tasks={project.tasks} />
             </div>
         </div>
     );

@@ -39,7 +39,7 @@ export const AddNewTaskForm = ({ project }: AddNewTaskFormProps) => {
                             <h3 className="text-2xl font-semibold text-gray-800">Add New Task</h3>
                             <button
                                 onClick={toggleSidebar}
-                                className="text-gray-400 hover:text-gray-600"
+                                className="text-gray-400 hover:text-gray-600 text-xl"
                             >
                                 ✕
                             </button>

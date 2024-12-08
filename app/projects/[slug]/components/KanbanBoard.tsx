@@ -16,12 +16,12 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks }) => {
     const [columns, setColumns] = React.useState<{
         // BACKLOG: Task[];
         TODO: Task[];
-        PROGRESS: Task[];
+        IN_PROGRESS: Task[];
         DONE: Task[];
     }>(() => ({
         // BACKLOG: tasks.filter((task) => task.status === "BACKLOG"),
         TODO: tasks.filter((task) => task.status === "TODO"),
-        PROGRESS: tasks.filter((task) => task.status === "IN_PROGRESS"),
+        IN_PROGRESS: tasks.filter((task) => task.status === "IN_PROGRESS"),
         DONE: tasks.filter((task) => task.status === "DONE"),
     }));
 

@@ -132,6 +132,7 @@ export async function addTimeLog({ taskId, duration }: AddTimeLogParams) {
             },
         });
 
+        revalidatePath(`/tasks/${taskId}`);
         // Zwrot nowo utworzonego logu czasu
         return timeLog;
     } catch (error) {

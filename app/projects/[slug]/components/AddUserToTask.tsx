@@ -84,7 +84,7 @@ export default function AddUserToTask({ taskId, projectId }: AddUserToTaskProps)
                     <div className="flex justify-between items-center mb-4">
                         <Dialog.Title className="text-xl font-bold">Add User</Dialog.Title>
                         <button onClick={() => setIsOpen(false)}>
-                            <X className="w-6 h-6 text-gray-500 hover:text-gray-700" />
+                            <X className="w-6 h-6 text-gray-500 hover:text-gray-700 text-xl" />
                         </button>
                     </div>
                     <Dialog.Description className="text-gray-600 text-sm">

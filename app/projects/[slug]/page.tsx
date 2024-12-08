@@ -123,6 +123,9 @@ export default async function ProjectPage({ params }: { params: { slug: string }
 
                 {/* Przekazanie projectId do BacklogPage */}
                 <BacklogPage projectId={project.id} />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                </div>
             </div>
         </div>
     );
