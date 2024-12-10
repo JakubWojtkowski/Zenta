@@ -19,7 +19,7 @@ export async function createSprint(data: CreateSprintInput) {
         const tasksInBacklog = await prisma.task.count({
             where: {
                 projectId: data.projectId,
-                sprintId: null, // Zadania bez przypisanego sprintu
+                sprintId: null,
             },
         });
 
@@ -56,25 +56,23 @@ export async function createSprint(data: CreateSprintInput) {
 }
 
 interface EndSprintInput {
-    sprintId: string; // ID sprintu do zakończenia
-    projectId: string; // ID projektu dla odświeżenia
+    sprintId: string; 
+    projectId: string;
 }
 
 export async function endSprint(data: EndSprintInput) {
     try {
-        // Aktualizacja statusu sprintu w bazie danych (np. oznaczenie jako zakończony)
+        // Aktualizacja statusu sprintu w bazie danych
         await prisma.sprint.update({
             where: { id: data.sprintId },
-            data: { isCompleted: true }, // Zakładamy, że masz pole `isCompleted` w tabeli `sprint`
+            data: { isCompleted: true }, 
         });
 
-        // Opcjonalnie: aktualizacja zadań w tym sprincie (np. usunięcie przypisania sprintu)
         await prisma.task.updateMany({
             where: { sprintId: data.sprintId },
-            data: { sprintId: null }, // Oznacza zadania jako niezwiązane z żadnym sprintem
+            data: { sprintId: null },
         });
 
-        // Odświeżenie ścieżki projektu po zakończeniu sprintu
         revalidatePath(`/projects/${data.projectId}`);
 
         return { success: true, message: "Sprint zakończony pomyślnie." };
