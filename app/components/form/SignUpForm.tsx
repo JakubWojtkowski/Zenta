@@ -73,7 +73,10 @@ const SignUpForm = () => {
 
     return (
         <Form {...form}>
-            <div className='flex flex-col h-full'>
+             <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlnsXlink="http://www.w3.org/1999/xlink" viewBox="0 0 800 400" opacity="1"><defs><filter id="bbblurry-filter" x="-100%" y="-100%" width="400%" height="400%" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB" className='w-full'>
+                <feGaussianBlur stdDeviation="37" x="0%" y="0%" width="100%" height="100%" in="SourceGraphic" edgeMode="none" result="blur"></feGaussianBlur></filter></defs><g filter="url(#bbblurry-filter)"><ellipse rx="150" ry="150" cx="600.2307106537344" cy="170.7195317133559" fill="hsla(207, 73%, 53%, 1.00)"></ellipse><ellipse rx="150" ry="150" cx="168.3105086081939" cy="357.5819996139767" fill="hsla(311, 38%, 68%, 1.00)"></ellipse><ellipse rx="150" ry="150" cx="568.538561756074" cy="634.4071418802151" fill="hsl(185, 100%, 57%)"></ellipse></g></svg>
+
+            <div className='flex flex-col justify-center items-center h-[100vh] absolute'>
                 <form onSubmit={form.handleSubmit(onSubmit)} className='w-full'>
                     <div className='space-y-2'>
                         <FormField

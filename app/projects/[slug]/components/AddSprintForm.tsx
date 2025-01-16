@@ -64,7 +64,7 @@ export default function AddSprintForm({ projectId, backlogTasks }: AddSprintForm
             </button>
 
             <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="fixed inset-0 z-50 flex items-center justify-center">
-                <div className="bg-white p-6 rounded-lg shadow-md max-w-lg w-full">
+                <div className="bg-white p-6 rounded-lg shadow-md max-w-lg w-full border">
                     <Dialog.Title className="text-xl font-bold mb-4">Create Sprint</Dialog.Title>
 
                     <form onSubmit={(e) => e.preventDefault()}>

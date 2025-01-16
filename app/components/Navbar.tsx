@@ -3,6 +3,7 @@ import { buttonVariants } from './ui/button';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import UserAccountnav from './UserAccountnav';
+import Image from 'next/image';
 
 const Navbar = async () => {
     const session = await getServerSession(authOptions);
@@ -12,7 +13,13 @@ const Navbar = async () => {
             <div className="container flex items-center justify-between">
 
                 <Link href="/" aria-label="Go to Home" className="flex items-center text-lg font-bold text-blue-600">
-                    ZENTA
+                    {/* ZENTA */}
+                    <Image
+                        height={80}
+                        width={80}
+                        src="/images/logo.png"
+                        alt="Logo"
+                    />
                 </Link>
 
                 <div className="flex items-center gap-4">
